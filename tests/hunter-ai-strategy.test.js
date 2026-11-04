@@ -13,7 +13,7 @@ has("case'interference':return unfinished.length&&cipherLead>=65?10",'interferen
 has("case'barrier':return enemyRatio<=.25?10",'barrier prioritizes low hunter health');
 has("case'bloodrage':return state.fury>=4?10",'bloodrage responds to fury threshold');
 has('const unfinished=state.ciphers.filter(x=>x.progress<100)','completed ciphers are excluded from AI cipher pressure');
-has('const playerTotal=state.hp+state.shield','AI includes survivor effective durability');
+has('playerTotal=state.hp+state.shield','AI includes survivor effective durability');
 has('const enemyRatio=state.enemyHp/state.difficulty.enemyHp','AI includes hunter remaining health ratio');
 has('if(scored[0].score>=6)','AI has a minimum tactical confidence threshold');
 has('a.skill.cost-b.skill.cost','AI breaks equal scores toward lower skill cost');
