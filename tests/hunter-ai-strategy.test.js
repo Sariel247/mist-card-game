@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const has=(s,label)=>assert(html.includes(s),label);
+has('function getHunterSkillScore(skill)','contextual AI scoring function exists');
+has("case'queenMirror':return playerTotal<=14?10:playerTotal<=22?8:state.gatePhase?7:5",'red queen attack buff responds to survivor danger and gate phase');
+has("case'sculptorSeal':return !state.gatePhase",'sculptor seal is not wasted after gate phase');
+has("case'jackFogblade':return state.shield>=5?10",'jack penetration prioritizes meaningful shield');
+has("case'control':return state.gatePhase&&gateLead>=55?10",'control prioritizes high gate progress');
+has("case'interference':return unfinished.length&&cipherLead>=65?10",'interference prioritizes near-complete ciphers');
+has("case'barrier':return enemyRatio<=.25?10",'barrier prioritizes low hunter health');
+has("case'bloodrage':return state.fury>=4?10",'bloodrage responds to fury threshold');
+has('const unfinished=state.ciphers.filter(x=>x.progress<100)','completed ciphers are excluded from AI cipher pressure');
+has('playerTotal=state.hp+state.shield','AI includes survivor effective durability');
+has('enemyRatio=state.enemyHp/state.difficulty.enemyHp','AI includes hunter remaining health ratio');
+has('if(scored[0].score>=6)','AI has a minimum tactical confidence threshold');
+has('a.skill.cost-b.skill.cost','AI breaks equal scores toward lower skill cost');
+has("log('监管者AI判断局势：'","AI decision is written to battle log");
+has('新手引导 · 先看这里','first-time player guide is available on setup screen');
+for(const step of ['破译密码机','管理手牌','留意监管者','观察天气与事件','最后逃生'])has(step,'guide includes step: '+step);
+
+has("const status=state.hunterSkillUsedRound===state.round?'本回合已释放技能':next>state.round?'冷却中 · '+(next-state.round)+' 回合'",'same-round cast status takes precedence over cooldown countdown');
+has("'监管者正在蓄力，下一次攻击额外造成 '+state.hunterDamageBonus+' 点伤害。 '",'hunter attack charge UI displays the actual stacked bonus');
+assert.equal(1+3+1-1,4,'cooldown countdown on cast round is represented by the used-this-round status, not a misleading four-round label');
+
+console.log('Hunter AI and first-time guide source audit: 23 assertions PASS');

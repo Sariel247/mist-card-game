@@ -1,0 +1,31 @@
+name: V0.8.0 verification
+
+on:
+  push:
+    branches:
+      - v0.8.0-development
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          python3 -c "from pathlib import Path; s=Path('index.html').read_text(); print(s.split('<script>',1)[1].split('</script>',1)[0])" > /tmp/mist-card-game.js
+          node --check /tmp/mist-card-game.js
+          for file in tests/*.test.js; do node --check "$file"; done
+      - name: Run regression tests
+        run: |
+          for file in tests/*.test.js; do
+            echo "===== $file ====="
+            node "$file"
+          done
