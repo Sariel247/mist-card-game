@@ -42,4 +42,15 @@ has("function decodeGate(i){if(!state||state.over||",'gate decode safely ignores
 has("$('escape').addEventListener('click',()=>{if(!state||state.over)return;",'escape action safely ignores missing or completed game state');
 has("$('redraw').addEventListener('click',()=>{if(!state||state.over||",'redraw action safely ignores missing or completed game state');
 
-console.log('Random event, save, records and achievement source audit: 41 assertions PASS');
+
+has("const validHero=saved&&Object.prototype.hasOwnProperty.call(characters,saved.selected);",'restore validates the saved survivor key before applying the save');
+has("weatherDefs[savedState.weather]&&hunterRoleDefs[savedState.hunterRole]",'restore validates saved weather and hunter role identifiers');
+has("savedState.ciphers.length===5&&Array.isArray(savedState.gates)&&savedState.gates.length===2",'restore validates the five cipher machines and two gates');
+has("savedState.ciphers.every(c=>c&&Number.isFinite(c.progress)",'restore rejects invalid cipher progress values');
+has("savedState.gates.every(g=>g&&Number.isFinite(g.progress)",'restore rejects invalid gate progress values');
+has("if(!validState||!baseSkill||!specialSkill)throw new Error",'restore rejects malformed saves or missing skill definitions');
+has("state.hero={...characters[selected]}",'restore rehydrates the selected survivor from canonical character data');
+has("catch(e){state=null;try{localStorage.removeItem(SAVE_KEY)}",'invalid save recovery clears partial state and removes the corrupt save');
+has("state.hunterBaseSkill=baseSkill;state.hunterSpecialSkill=specialSkill;",'restore preserves exact saved hunter base and specialty skill identities');
+
+console.log('Random event, save, records and achievement source audit: 50 assertions PASS');
