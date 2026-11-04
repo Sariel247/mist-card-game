@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 // Deterministic upper-bound / cadence model for the hunter skill economy.
 // Mirrors: initial 3 points, +2 each round, cap 6, one skill per round,
 // cooldown ready when cooldownUntil <= current round.
-function run({weatherBonus=0, rounds=12, costs=[2,2,3], cooldowns=[3,3,4]}) {
+function run({weatherBonus=0, rounds=12, costs=[2,2,3], cooldowns=[3,3,4]}={}) {
   let points=3, uses=0;
   const readyAt=[1,1,1], rows=[];
   for(let round=1; round<=rounds; round++) {
