@@ -36,8 +36,8 @@ has('state.weatherDefenseUsedRound!==state.round','autumn/cold first defense bon
 has('state.weatherAttackResourceUsedRound!==state.round','thunder attack resource bonus is once per round',html);
 has('state.weatherDefenseResourceUsedRound!==state.round','autumn defense resource bonus is once per round',html);
 has('if(state.weather===\'cold\')weatherHunterSkill=tier;','cold weather does not grant survivor skill points');
-has('state.eventsTriggered++;','event counter increments once for each selected event');
-has('state.lastEvent={name:event.name,desc:event.desc};','latest event is saved for UI and persistence');
+has('state.eventsTriggered++;','event counter increments once for each selected event',html);
+has('state.lastEvent={name:event.name,desc:event.desc};','latest event is saved for UI and persistence',html);
 has('function persistGame(){','round changes are persisted through render');
 
 
