@@ -43,7 +43,7 @@ has('function persistGame(){','round changes are persisted through render');
 
 const vm=require('node:vm');
 const enemyStart=html.indexOf('function enemyTurn(){');
-const enemyEnd=html.indexOf('\\nfunction decodeGate',enemyStart);
+const enemyEnd=html.indexOf('function decodeGate',enemyStart);
 assert(enemyStart>=0&&enemyEnd>enemyStart,'actual enemyTurn function can be isolated');
 const runtimeState={
   over:false,round:1,difficulty:{damage:1,roundDamage:0,gateBonus:0,interference:0,gateLoss:0},
