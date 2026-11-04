@@ -5,7 +5,7 @@ const path=require('node:path');
 const vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const has=(s,label)=>assert(html.includes(s),label);
-const inlineScript=(html.match(/<script>([\\s\\S]*?)<\\/script>/)||[])[1];
+const inlineScript=(html.match(/<script>([\s\S]*?)<\/script>/)||[])[1];
 assert(inlineScript,'inline script exists');
 assert.doesNotThrow(()=>new vm.Script(inlineScript),'inline JavaScript parses');
 has('function triggerRandomEvent()','random event function exists');
