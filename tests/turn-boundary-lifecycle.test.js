@@ -80,7 +80,8 @@ assert.equal(duration(2,true),0,'two protected player actions consume two durati
 assert.equal(duration(2,false),2,'newly applied barrier is not consumed on cast turn');
 function cooldownReady(castRound,cooldown,round){return castRound+cooldown+1<=round}
 assert.equal(cooldownReady(1,3,3),false);
-assert.equal(cooldownReady(1,3,4),false);\nassert.equal(cooldownReady(1,3,5),true);
+assert.equal(cooldownReady(1,3,4),false);
+assert.equal(cooldownReady(1,3,5),true);
 
 // A random-event cipher completion can activate the gate phase after the
 // ordinary turn resources were restored. The gate-tier weather increment
