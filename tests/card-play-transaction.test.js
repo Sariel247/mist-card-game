@@ -9,7 +9,7 @@ assert(script,'inline script exists');
 assert.doesNotThrow(()=>new vm.Script(script),'page inline JavaScript parses');
 const deckSource=script.match(/const deck=(\[[\s\S]*?\]);\nconst difficulties=/);
 assert(deckSource,'deck source found');
-const deck=vm.runInNewContext(deckSource[1]);
+const deck=new Function('return '+deckSource[1])();
 const playStart=script.indexOf('function play(i){');
 const playEnd=script.indexOf('\nfunction triggerRandomEvent',playStart);
 assert(playStart>=0&&playEnd>playStart,'play function boundaries found');
@@ -62,4 +62,4 @@ for(const card of deck){
 {
  const state=fresh(deck[0]);run(state,99);assert.equal(state.hand.length,1);assert.equal(state.energy,20);
 }
-console.log('Card play transaction: '+executed+' card branches + 21 assertions PASS');
+console.log('Card play transaction: '+executed+' card branches + 7 rejected-operation cases PASS');
