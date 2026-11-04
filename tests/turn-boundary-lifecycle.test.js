@@ -32,9 +32,9 @@ has("if(state.weather==='cold')weatherHunterSkill=tier;",'cold restores hunter s
 has('state.decodeActions=0;','ordinary decode action limit resets for the new round');
 has('state.pendingDecodeEnergy=0;','pending cipher milestone energy is consumed exactly once');
 has("state.weather==='wind'&&state.weatherAttackUsedRound!==state.round",'wind attack bonus is once per round',html);
-has('state.weatherDefenseUsedRound!==state.round','autumn/cold first defense bonus is once per round');
-has('state.weatherAttackResourceUsedRound!==state.round','thunder attack resource bonus is once per round');
-has('state.weatherDefenseResourceUsedRound!==state.round','autumn defense resource bonus is once per round');
+has('state.weatherDefenseUsedRound!==state.round','autumn/cold first defense bonus is once per round',html);
+has('state.weatherAttackResourceUsedRound!==state.round','thunder attack resource bonus is once per round',html);
+has('state.weatherDefenseResourceUsedRound!==state.round','autumn defense resource bonus is once per round',html);
 has('if(state.weather===\'cold\')weatherHunterSkill=tier;','cold weather does not grant survivor skill points');
 has('state.eventsTriggered++;','event counter increments once for each selected event');
 has('state.lastEvent={name:event.name,desc:event.desc};','latest event is saved for UI and persistence');
