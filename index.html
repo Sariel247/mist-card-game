@@ -101,13 +101,13 @@ let selected='seer',state=null,serial=0;
 let selectedHunterRole='queen';
 const hunterRoleDefs={
 queen:{name:'红夫人 · 玛丽',skill:{id:'queenMirror',name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 3 点伤害。',score:()=>state.hp+state.shield<20?8:5}},
-sculptor:{name:'雕刻家 · 伽拉泰亚',skill:{id:'sculptorSeal',name:'雕像封锁',cost:2,cooldown:4,desc:'求生者下一回合所有破译行动进度减少 5 个百分点。',score:()=>state.gatePhase||state.ciphers.some(c=>c.progress>=50&&c.progress<100)?9:5}},
+sculptor:{name:'雕刻家 · 伽拉泰亚',skill:{id:'sculptorSeal',name:'雕像封锁',cost:2,cooldown:4,desc:'求生者下一回合所有破译行动进度减少 5 个百分点。',score:()=>state.gatePhase?0:state.ciphers.some(c=>c.progress>=50&&c.progress<100)?9:5}},
 jack:{name:'杰克 · 开膛手',skill:{id:'jackFogblade',name:'雾刃',cost:2,cooldown:3,desc:'下一次攻击无视最多 3 点护盾。',score:()=>state.shield>0?8:4}}
 };
 const hunterBasePool=[
 {id:'control',name:'禁锢领域',cost:3,cooldown:3,desc:'束缚求生者下一回合，不能打牌或破译。',score:()=>state.hand.length>=2||state.gatePhase?8:4},
 {id:'rampage',name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 3 点伤害。',score:()=>state.hp+state.shield<22?8:5},
-{id:'interference',name:'破译干扰',cost:3,cooldown:4,desc:'当前进度最高的未完成密码机倒退 10%。',score:()=>Math.max(...state.ciphers.map(c=>c.progress))>=35?9:3}
+{id:'interference',name:'破译干扰',cost:3,cooldown:4,desc:'当前进度最高的未完成密码机倒退 10%。',score:()=>state.ciphers.some(c=>c.progress>=35&&c.progress<100)?9:3}
 ];
 const hunterSpecialPool=[
 {id:'barrier',name:'暗影屏障',cost:3,cooldown:4,desc:'接下来 2 个求生者行动回合，监管者受到伤害降低 30%。',score:()=>state.enemyHp/state.difficulty.enemyHp<.65?9:4},
