@@ -23,7 +23,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.7.8</div></header>
+<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.7.9</div></header>
 <section class="hero"><div class="eyebrow">THE FOG IS NEVER EMPTY</div><h1>庄园的最后一局</h1><div class="subtitle">每一张牌，都是一次选择。每一次选择，都留下代价。</div></section>
 <section class="panel setup" id="setup">
 <h2 class="section-title">选择你的求生者</h2>
@@ -88,7 +88,7 @@ function shuffle(a){const copy=[...a];for(let i=copy.length-1;i>0;i--){const j=M
 function log(msg){const p=document.createElement('p');p.textContent=msg;$('log').prepend(p)}
 function draw(n=1){for(let i=0;i<n;i++){if(!state.deck.length)state.deck=shuffle(deck);state.hand.push(state.deck.pop())}}
 function gainFury(amount,reason){state.fury+=amount;log('监管者愤怒值 +'+amount+'（'+reason+'），当前 '+state.fury+' 点。')}
-function trackCipherFury(before,after){const total=state.ciphers.reduce((sum,c)=>sum+c.progress,0);state.decodeActions++;while(total>=state.nextCipherFuryMilestone){gainFury(1,'累计破译进度达到 '+state.nextCipherFuryMilestone+'%');state.nextCipherFuryMilestone+=25;}while(total>=state.nextEnergyMilestone){state.pendingDecodeEnergy++;log('累计密码机进度达到 '+state.nextEnergyMilestone+'%，下回合额外恢复 1 点能量。');state.nextEnergyMilestone+=50;}if(before<100&&after>=100)gainFury(2,'完成一台密码机')}
+function trackCipherFury(before,after){const total=state.ciphers.reduce((sum,c)=>sum+c.progress,0);while(total>=state.nextCipherFuryMilestone){gainFury(1,'累计破译进度达到 '+state.nextCipherFuryMilestone+'%');state.nextCipherFuryMilestone+=25;}while(total>=state.nextEnergyMilestone){state.pendingDecodeEnergy++;log('累计密码机进度达到 '+state.nextEnergyMilestone+'%，下回合额外恢复 1 点能量。');state.nextEnergyMilestone+=50;}if(before<100&&after>=100)gainFury(2,'完成一台密码机')}
 function getExtraAttackChance(){const roundBonus=state.round<=2?0:state.round<=4?10:state.round<=6?20:30;const completed=state.ciphers.filter(c=>c.progress>=100).length;return Math.min(60,roundBonus+completed*5)}
 function start(){
 const c=characters[selected],difficulty=difficulties[$('difficulty').value],hunterSpecialty=Math.random()<0.5?'reduce':'boost';state={hero:{...c},difficulty,hunterSpecialty,hp:c.hp,shield:c.shield,energy:c.energy,skillPoints:3,enemyHp:difficulty.enemyHp,round:1,hand:[],deck:shuffle([...deck,...deck]),weaken:0,seerHitCount:0,doctorCooldown:0,doctorCooldownSetRound:0,ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),gates:[{progress:0},{progress:0}],gatePhase:false,over:false,controlTurns:0,hunterReductionTurns:0,hunterDamageBonus:0,hunterCooldowns:{control:0,reduce:0,boost:0},fury:0,nextCipherFuryMilestone:25,nextEnergyMilestone:50,pendingDecodeEnergy:0,decodeActions:0,hunterSkipAttack:0,playerGuardTurns:0,reflectDamage:0,attackBonus:0};
@@ -109,7 +109,7 @@ if(canControl){let score=0;if(handPressure)score+=3;if(progressThreat)score+=3;i
 if(canSpecial){if(state.hunterSpecialty==='reduce'){let score=0;if(state.enemyHp/state.difficulty.enemyHp<.55)score+=4;if(state.enemyHp/state.difficulty.enemyHp<.35)score+=2;if(state.gatePhase)score+=1;if(state.hunterReductionTurns>0)score-=5;if(Math.random()<Math.min(.9,score/7))choice='reduce';}else{let score=0;if(effectiveHp<=16)score+=4;if(hpRatio<.5)score+=2;if(state.gatePhase)score+=2;if(state.shield===0)score+=1;if(Math.random()<Math.min(.9,score/7))choice='boost';}}
 if(choice)useHunterSkill(choice);}
 function play(i){
-const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over||(c.type==='decode'&&state.decodeActions>=3)||(c.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100))))return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
+const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over||(c.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100))))return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
 switch(c.type){
 case'attack':{const bonus=state.attackBonus||0;state.attackBonus=0;const dealt=damageHunter(c.value+bonus);log(c.name+'：造成 '+dealt+' 点伤害'+(bonus?'（含额外 '+bonus+' 点）':'')+'。');break;}
 case'focus':state.energy+=c.value;draw(1);log('冷静观察：获得 '+c.value+' 点能量，并抽取 1 张牌。');break;
@@ -131,7 +131,7 @@ case'resolve':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.val
 check();render();
 }
 function activateGatePhase(){if(state.ciphers.every(x=>x.progress>=100)&&!state.gatePhase){state.gatePhase=true;log('五台密码机全部完成！东、西两侧逃生大门已通电。监管者开始全力追击！')}}
-function decode(){if(state.over||state.controlTurns>0||state.energy<1||state.decodeActions>=3)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;const gain=selected==='thief'?25:20;const before=target.progress;target.progress=Math.min(100,target.progress+gain);trackCipherFury(before,target.progress);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();render()}
+function decode(){if(state.over||state.controlTurns>0||state.energy<1||state.decodeActions>=3)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;state.decodeActions++;const gain=selected==='thief'?25:20;const before=target.progress;target.progress=Math.min(100,target.progress+gain);trackCipherFury(before,target.progress);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();render()}
 function enemyTurn(){
 if(state.over)return;
 const cfg=state.difficulty;const controlWasActive=state.controlTurns>0;
