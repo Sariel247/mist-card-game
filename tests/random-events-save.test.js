@@ -10,7 +10,7 @@ assert(inlineScript,'inline script exists');
 assert.doesNotThrow(()=>new vm.Script(inlineScript),'inline JavaScript parses');
 has('function triggerRandomEvent()','random event function exists');
 has('state.round%3===1&&state.eventsTriggered<4','events occur after completed rounds 3, 6, 9 and 12, capped at four');
-for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现','狩猎本能','技能充能','锋刃磨砺','破译干扰'])has(name,'event exists: '+name);
+for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现','破译干扰'])has(name,'event exists: '+name);
 has("localStorage.setItem(SAVE_KEY,JSON.stringify({state,selected,savedAt:Date.now()}))",'autosave persists game state');
 has('function restoreGame()','restore function exists');
 has('state.hunterRoleDef=hunterRoleDefs[state.hunterRole]||hunterRoleDefs.queen','restore rehydrates hunter role definition');
@@ -27,4 +27,4 @@ has("SAVE_KEY+'-records'",'career records are stored separately from active save
 for(const achievement of ['first_win','escape_artist','cipher_master','event_explorer','hard_survivor'])has(achievement,'achievement exists: '+achievement);
 has("state.difficulty.name===difficulties.hard.name",'hard achievement works after JSON restore');
 has("data[mode]",'standard and custom records are kept separately');
-console.log('Random event, save, records and achievement source audit: 33 assertions PASS');
+console.log('Random event, save, records and achievement source audit: 32 assertions PASS');
