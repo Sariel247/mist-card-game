@@ -3,13 +3,15 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-const script=(html.match(/<script>([\\s\\S]*?)<\\/script>/)||[])[1];
-assert(script,'inline script exists');
+const scriptStart=html.indexOf('<script>')+'<script>'.length;
+const scriptEnd=html.indexOf('</script>',scriptStart);
+const script=html.slice(scriptStart,scriptEnd);
+assert(script.length>0,'inline script exists');
 assert.doesNotThrow(()=>new Function(script),'page inline JavaScript parses');
 const start=script.indexOf('function triggerRandomEvent(){');
 const end=script.indexOf('function persistGame(){',start);
 assert(start>=0&&end>start,'random event function boundaries found');
-const body=script.slice(start+'function triggerRandomEvent(){'.length,end).replace(/\\}\\s*$/,'');
+const body=script.slice(start+'function triggerRandomEvent(){'.length,end).trim().replace(/\\}$/, '');
 const create=new Function('state','log','trackCipherFury','activateGatePhase','grantWeatherShield','gainFury','return function(){'+body+'}');
 const expected=['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现','破译干扰'];
 for(let i=0;i<expected.length;i++){
