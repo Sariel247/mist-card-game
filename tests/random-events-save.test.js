@@ -56,7 +56,7 @@ has("state.hunterBaseSkill=baseSkill;state.hunterSpecialSkill=specialSkill;",'re
 has("if(state.enemyHp<=0){state.enemyHp=0;finish(true);return}",'hunter reaching zero health immediately resolves a survivor victory');
 has("if(state.hp<=0){state.hp=0;finish(false)}",'survivor reaching zero health immediately resolves a defeat');
 has("check();if(state.over)return;",'hunter attack sequence stops immediately after a lethal result check');
-has("check();if(state.over)return;\\n}\\nif(state.doctorCooldown>0",'no later hunter attack segments or turn recovery run after a lethal hit');
+has("check();if(state.over)return;\n}\nif(state.doctorCooldown>0",'no later hunter attack segments or turn recovery run after a lethal hit');
 has("check();render();",'card damage resolves lethal hunter/player health before the next action can begin');
 has("if(state.gates.some(g=>g.progress>=100))finish(true,true)",'escaping through either fully opened gate records an escape victory');
 has("$('restart').addEventListener('click',()=>{stopWeatherAudio();try{localStorage.removeItem(SAVE_KEY)}catch(e){}state=null;",'restart clears the previous in-memory match before returning to setup');
