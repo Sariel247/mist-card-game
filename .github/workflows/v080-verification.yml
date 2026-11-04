@@ -20,7 +20,8 @@ jobs:
           node-version: 22
       - name: Check JavaScript syntax
         run: |
-          node --check <(sed -n '/<script>/,/<\/script>/p' index.html | sed '1d;$d')
+          sed -n '/<script>/,/<\\/script>/p' index.html | sed '1d;$d' > /tmp/mist-card-game.js
+          node --check /tmp/mist-card-game.js
           for file in tests/*.test.js; do node --check "$file"; done
       - name: Run regression tests
         run: |
