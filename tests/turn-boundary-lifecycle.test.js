@@ -81,4 +81,32 @@ assert.equal(duration(2,false),2,'newly applied barrier is not consumed on cast 
 function cooldownReady(castRound,cooldown,round){return castRound+cooldown+1<=round}
 assert.equal(cooldownReady(1,3,3),false);
 assert.equal(cooldownReady(1,3,4),true);
-console.log('Turn boundary lifecycle audit: 18 source and model assertions PASS');
+
+// A random-event cipher completion can activate the gate phase after the
+// ordinary turn resources were restored. The gate-tier weather increment
+// must be topped up immediately rather than waiting for the next round.
+const gateState={
+  over:false,round:3,difficulty:{damage:1,roundDamage:0,gateBonus:0,interference:0,gateLoss:0},
+  controlTurns:0,hunterReductionTurns:0,fury:0,gatePhase:false,gates:[{progress:0},{progress:0}],
+  ciphers:[{id:1,progress:100},{id:2,progress:100},{id:3,progress:100},{id:4,progress:100},{id:5,progress:85}],
+  weather:'rain',energy:0,skillPoints:3,hunterSkillPoints:3,pendingDecodeEnergy:0,decodeActions:0,eventsTriggered:0,
+  hp:100,shield:0,hunterSkipAttack:0,playerGuardHits:0,hunterDamageBonus:0,weaken:0,
+  markedWeakenHits:0,markedWeakenAmount:0,hunterShieldPierce:0,doctorCooldown:0,doctorCooldownSetRound:0,
+  weatherHunterFirstAttackRound:0,weatherDefenseUsedRound:0,weatherAttackUsedRound:0,
+  weatherAttackResourceUsedRound:0,weatherDefenseResourceUsedRound:0
+};
+const gateRuntime={
+  state:gateState,selected:'seer',gainFury(){},chooseHunterSkill(){},weatherHunterDamageBonus(){return 0;},
+  getExtraAttackChance(){return 0;},log(){},check(){},weatherTier(){return gateState.gatePhase?2:1;},
+  triggerRandomEvent(){gateState.eventsTriggered++;gateState.ciphers[4].progress=100;gateState.gatePhase=true;},
+  draw(){},render(){},damageHunter(){return 0;}
+};
+const gateContext=vm.createContext(gateRuntime);
+vm.runInContext('Math.random=()=>0.99;',gateContext);
+vm.runInContext(html.slice(enemyStart,enemyEnd),gateContext);
+vm.runInContext('enemyTurn();',gateContext);
+assert.equal(gateState.gatePhase,true,'random event can activate the gate phase');
+assert.equal(gateState.energy,5,'rain gate-phase resource tier is topped up on the transition turn');
+assert.equal(gateState.round,4,'event-triggered gate transition still advances the round exactly once');
+
+console.log('Turn boundary lifecycle audit: 21 source, model and transition assertions PASS');
