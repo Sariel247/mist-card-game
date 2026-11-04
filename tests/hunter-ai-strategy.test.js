@@ -18,4 +18,6 @@ has('const enemyRatio=state.enemyHp/state.difficulty.enemyHp','AI includes hunte
 has('if(scored[0].score>=6)','AI has a minimum tactical confidence threshold');
 has('a.skill.cost-b.skill.cost','AI breaks equal scores toward lower skill cost');
 has("log('监管者AI判断局势：'","AI decision is written to battle log");
-console.log('Hunter AI strategy source audit: 14 assertions PASS');
+has('新手引导 · 先看这里','first-time player guide is available on setup screen');
+for(const step of ['破译密码机','管理手牌','留意监管者','观察天气与事件','最后逃生'])has(step,'guide includes step: '+step);
+console.log('Hunter AI and first-time guide source audit: 20 assertions PASS');
