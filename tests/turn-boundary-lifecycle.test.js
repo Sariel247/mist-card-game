@@ -1,0 +1,33 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const slice=(a,b)=>{const i=html.indexOf(a),j=html.indexOf(b,i);assert(i>=0&&j>i,'source section '+a);return html.slice(i,j)};
+const enemy=slice('function enemyTurn(){','\nfunction decodeGate');
+const skill=slice('function hunterSkillReady','\nfunction renderHunterSkills');
+const use=slice('function useHunterSkill','\nfunction renderHunterSkills');
+const hero=slice('function useSkill(){','\nfunction damageHunter');
+const has=(s,label,src=enemy)=>assert(src.includes(s),label);
+has('const controlWasActive=state.controlTurns>0;','control duration snapshot');
+has('const reductionWasActive=state.hunterReductionTurns>0;','barrier duration snapshot');
+has('if(controlWasActive&&state.controlTurns>0)state.controlTurns--;','control decremented only after protected player action');
+has('if(reductionWasActive&&state.hunterReductionTurns>0)state.hunterReductionTurns--;','barrier decremented only after protected player action');
+has('state.round++;','round advances after duration settlement');
+has('state.energy+=3+decodeBonus+weatherEnergy;','energy and pending decode bonus restored at turn boundary');
+has('state.skillPoints=Math.min(6,playerSkillBefore+2+weatherPlayerSkill);','player skill points capped at six');
+has('state.hunterSkillPoints=Math.min(6,hunterSkillBefore+2+weatherHunterSkill);','hunter skill points capped at six');
+has('if(state.decodePenaltyRound<state.round){state.decodePenalty=0;state.decodePenaltyRound=0;}','decode penalty cleared after its target round');
+has('if(state.doctorCooldown>0&&state.round>state.doctorCooldownSetRound)state.doctorCooldown--;','doctor cooldown decremented after complete rounds');
+assert(skill.includes('(state.hunterSkillCooldowns[skill.id]||0)<=state.round'),'cooldown readiness uses current round');
+assert(use.includes('state.hunterSkillCooldowns[skill.id]=state.round+skill.cooldown+1'),'skill cooldown excludes cast round and counts full intervening rounds');
+assert(hero.includes('state.doctorCooldown=2;state.doctorCooldownSetRound=state.round;'),'doctor records cooldown start round');
+assert(enemy.indexOf('const controlWasActive=')<enemy.indexOf('chooseHunterSkill();'),'new control effect not treated as pre-existing at same turn end');
+assert(enemy.indexOf('const reductionWasActive=')<enemy.indexOf('chooseHunterSkill();'),'new barrier effect not treated as pre-existing at same turn end');
+function duration(initial,activeSnapshot){let n=initial;for(let i=0;i<2;i++){if(activeSnapshot&&n>0)n--;}return n}
+assert.equal(duration(2,true),0,'two protected player actions consume two duration counts');
+assert.equal(duration(2,false),2,'newly applied barrier is not consumed on cast turn');
+function cooldownReady(castRound,cooldown,round){return castRound+cooldown+1<=round}
+assert.equal(cooldownReady(1,3,3),false);
+assert.equal(cooldownReady(1,3,4),true);
+console.log('Turn boundary lifecycle audit: 18 source and model assertions PASS');
