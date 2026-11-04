@@ -99,7 +99,8 @@ const deck=[
 const difficulties={easy:{name:"简单",enemyHp:30,damage:3,roundDamage:0.5,gateBonus:1,interference:0.2,gateLoss:8},normal:{name:"普通",enemyHp:44,damage:5,roundDamage:0.75,gateBonus:2,interference:0.35,gateLoss:12},hard:{name:"困难",enemyHp:56,damage:7,roundDamage:1,gateBonus:3,interference:0.5,gateLoss:18}};
 let selected='seer',state=null,serial=0;
 let selectedHunterRole='queen';const SAVE_KEY='mist-card-game-v080-save';
-const hunterPortraits={"queen":"https://patchwiki.biligame.com/images/dwrg/thumb/f/f9/n5qg4j48e1c80h32lygjsbz4n1engng.png/75px-%E7%BA%A2%E5%A4%AB%E4%BA%BA%E5%A4%B4%E5%83%8F2.png","sculptor":"https://patchwiki.biligame.com/images/dwrg/thumb/4/40/coqmq021i258qjtv2ngwq5hla21fmei.png/75px-%E9%9B%95%E5%88%BB%E5%AE%B6%E5%A4%B4%E5%83%8F2.png","jack":"https://patchwiki.biligame.com/images/dwrg/thumb/e/ec/lcfr2pihvh9fu954tjt7as4cl18kqzz.png/75px-%E2%80%9C%E6%9D%B0%E5%85%8B%E2%80%9D%E5%A4%B4%E5%83%8F2.png"};\nconst hunterRoleDefs={
+const hunterPortraits={"queen":"https://patchwiki.biligame.com/images/dwrg/thumb/f/f9/n5qg4j48e1c80h32lygjsbz4n1engng.png/75px-%E7%BA%A2%E5%A4%AB%E4%BA%BA%E5%A4%B4%E5%83%8F2.png","sculptor":"https://patchwiki.biligame.com/images/dwrg/thumb/4/40/coqmq021i258qjtv2ngwq5hla21fmei.png/75px-%E9%9B%95%E5%88%BB%E5%AE%B6%E5%A4%B4%E5%83%8F2.png","jack":"https://patchwiki.biligame.com/images/dwrg/thumb/e/ec/lcfr2pihvh9fu954tjt7as4cl18kqzz.png/75px-%E2%80%9C%E6%9D%B0%E5%85%8B%E2%80%9D%E5%A4%B4%E5%83%8F2.png"};
+const hunterRoleDefs={
 queen:{name:'红夫人 · 玛丽',skill:{id:'queenMirror',name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 3 点伤害。',score:()=>state.hp+state.shield<20?8:5}},
 sculptor:{name:'雕刻家 · 伽拉泰亚',skill:{id:'sculptorSeal',name:'雕像封锁',cost:2,cooldown:4,desc:'求生者下一回合所有破译行动进度减少 5 个百分点。',score:()=>state.gatePhase?0:state.ciphers.some(c=>c.progress>=50&&c.progress<100)?9:5}},
 jack:{name:'杰克 · 开膛手',skill:{id:'jackFogblade',name:'雾刃',cost:2,cooldown:3,desc:'下一次攻击无视最多 3 点护盾。',score:()=>state.shield>0?8:4}}
