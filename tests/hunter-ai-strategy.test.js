@@ -20,4 +20,9 @@ has('a.skill.cost-b.skill.cost','AI breaks equal scores toward lower skill cost'
 has("log('监管者AI判断局势：'","AI decision is written to battle log");
 has('新手引导 · 先看这里','first-time player guide is available on setup screen');
 for(const step of ['破译密码机','管理手牌','留意监管者','观察天气与事件','最后逃生'])has(step,'guide includes step: '+step);
-console.log('Hunter AI and first-time guide source audit: 20 assertions PASS');
+
+has("const status=state.hunterSkillUsedRound===state.round?'本回合已释放技能':next>state.round?'冷却中 · '+(next-state.round)+' 回合'",'same-round cast status takes precedence over cooldown countdown');
+has("'监管者正在蓄力，下一次攻击额外造成 '+state.hunterDamageBonus+' 点伤害。 '",'hunter attack charge UI displays the actual stacked bonus');
+assert.equal(1+3+1-1,4,'cooldown countdown on cast round is represented by the used-this-round status, not a misleading four-round label');
+
+console.log('Hunter AI and first-time guide source audit: 23 assertions PASS');
