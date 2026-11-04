@@ -21,8 +21,8 @@ for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据
 has("localStorage.setItem(SAVE_KEY,JSON.stringify({state,selected,savedAt:Date.now()}))",'autosave persists game state');
 has('function restoreGame()','restore function exists');
 has('state.hunterRoleDef=hunterRoleDefs[state.hunterRole]','restore rehydrates validated hunter role definition');
-has('state.hunterBaseSkill=hunterBasePool.find','restore rehydrates base skill');
-has('state.hunterSpecialSkill=hunterSpecialPool.find','restore rehydrates special skill');
+has('state.hunterBaseSkill=baseSkill','restore rehydrates validated base skill');
+has('state.hunterSpecialSkill=specialSkill','restore rehydrates validated special skill');
 has('persistGame();','render triggers autosave');
 has("localStorage.removeItem(SAVE_KEY)",'save is cleared on end/reset');
 has("$('resultStats').innerHTML=",'result summary is rendered');
