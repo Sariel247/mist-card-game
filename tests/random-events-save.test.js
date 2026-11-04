@@ -16,7 +16,7 @@ has('persistGame();','render triggers autosave');
 has("localStorage.removeItem(SAVE_KEY)",'save is cleared on end/reset');
 has("$('resultStats').innerHTML=",'result summary is rendered');
 
-has('function recordMatch(win,escaped)','career record function exists');
+has("$('abandon').addEventListener('click'",'player can abandon a restored run safely');\nhas('function recordMatch(win,escaped)','career record function exists');
 has("SAVE_KEY+'-records'",'career records are stored separately from active save');
 for(const achievement of ['first_win','escape_artist','cipher_master','event_explorer','hard_survivor'])has(achievement,'achievement exists: '+achievement);
 has("state.difficulty.name===difficulties.hard.name",'hard achievement works after JSON restore');
