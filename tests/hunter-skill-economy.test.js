@@ -23,9 +23,9 @@ function run({weatherBonus=0, rounds=12, costs=[2,2,3], cooldowns=[3,3,4]}) {
 const base=run();
 const fogGate=run({weatherBonus:2});
 const coldGate=run({weatherBonus:2});
-assert.equal(base.uses,12); // three skills rotate; resource income sustains this schedule
-assert.equal(fogGate.uses,12);
-assert.equal(coldGate.uses,12);
+assert.equal(base.uses,8); // cooldowns, not resource income, limit this 12-round schedule
+assert.equal(fogGate.uses,8);
+assert.equal(coldGate.uses,8);
 assert(base.rows.every(r=>r.afterRegen<=6));
 assert(fogGate.rows.every(r=>r.afterRegen<=6));
 assert(coldGate.rows.every(r=>r.afterRegen<=6));
