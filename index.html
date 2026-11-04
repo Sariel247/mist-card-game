@@ -39,6 +39,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 <div class="panel fighter enemy"><div class="fighter-head"><div><div class="role">THE HUNTER</div><div class="fighter-name">监管者 · 雾中人</div></div><div class="sigil">♜</div></div><div class="stats"><div class="stat">生命<b id="enemyHp">30</b></div><div class="stat">压迫<b id="enemyFear">0</b></div></div><div class="bar"><span id="enemyBar" style="width:100%"></span></div></div>
 <div class="panel fighter player"><div class="fighter-head"><div><div class="role">THE SURVIVOR</div><div class="fighter-name" id="playerName">先知 · 伊莱</div></div><div class="sigil">♙</div></div><div class="stats"><div class="stat">生命<b id="playerHp">24</b></div><div class="stat">能量<b id="energy">3</b></div><div class="stat">护盾<b id="shield">3</b></div></div><div class="bar"><span id="playerBar" style="width:100%"></span></div></div>
 </div>
+<div class="actions skill-actions"><button class="action" id="heroSkill">使用角色技能</button></div>
 <div class="statusline" id="round">第一回合 · 你的行动</div>
 <div class="panel cipher-area"><div class="cipher-head"><h3>庄园密码机 · 破译进度</h3><span id="cipherSummary">0 / 5 已完成</span></div><div class="cipher-grid" id="cipherGrid"></div><div class="cipher-controls"><div class="cipher-hint" id="cipherHint">选择破译行动，逐步校准密码机。每次消耗 1 点能量。</div><button class="action" id="decode">⌘ 破译当前密码机 · 1能量</button></div></div>
 <div class="panel gate-area" id="gateArea"><div class="cipher-head"><h3>逃生大门 · 最后的出口</h3><span id="gateSummary">等待密码机全部破译</span></div><div class="gate-grid"><div class="gate-card" id="gateCard0"><div class="gate-title"><strong>东侧大门</strong><span id="gatePct0">0%</span></div><div class="gate-track"><span id="gateBar0" style="width:0%"></span></div></div><div class="gate-card" id="gateCard1"><div class="gate-title"><strong>西侧大门</strong><span id="gatePct1">0%</span></div><div class="gate-track"><span id="gateBar1" style="width:0%"></span></div></div></div><div class="gate-actions"><button class="action" id="gate0">破译东侧大门 · 1能量</button><button class="action" id="gate1">破译西侧大门 · 1能量</button><button class="escape-action" id="escape">穿过大门，逃离庄园 ↗</button></div><div class="cipher-hint" id="gateHint">五台密码机全部完成后，选择一扇大门继续破译。</div></div>
@@ -73,16 +74,17 @@ function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
 function log(msg){const p=document.createElement('p');p.textContent=msg;$('log').prepend(p)}
 function draw(n=1){for(let i=0;i<n;i++){if(!state.deck.length)state.deck=shuffle(deck);state.hand.push(state.deck.pop())}}
 function start(){
-const c=characters[selected];state={hero:{...c},hp:c.hp,shield:c.shield,energy:c.energy,enemyHp:30,fear:0,round:1,hand:[],deck:shuffle([...deck,...deck]),weaken:0,ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),gates:[{progress:0},{progress:0}],gatePhase:false,over:false};
+const c=characters[selected];state={hero:{...c},hp:c.hp,shield:c.shield,energy:c.energy,enemyHp:30,fear:0,round:1,hand:[],deck:shuffle([...deck,...deck]),weaken:0,skillUsed:false,ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),gates:[{progress:0},{progress:0}],gatePhase:false,over:false};
 $('setup').classList.add('hidden');$('game').classList.add('active');$('overlay').classList.remove('show');$('playerName').textContent=c.name;$('log').innerHTML='';log('你选择了'+c.name+'。庄园的大门在身后缓缓合拢。');draw(3);render();
 }
 function render(){
 $('playerHp').textContent=state.hp;$('enemyHp').textContent=state.enemyHp;$('energy').textContent=state.energy;$('shield').textContent=state.shield;$('enemyFear').textContent=state.fear;
-$('playerBar').style.width=Math.max(0,state.hp/state.hero.hp*100)+'%';$('enemyBar').style.width=Math.max(0,state.enemyHp/30*100)+'%';$('round').textContent='第 '+state.round+' 回合 · 你的行动';
+$('playerBar').style.width=Math.max(0,state.hp/state.hero.hp*100)+'%';$('enemyBar').style.width=Math.max(0,state.enemyHp/30*100)+'%';const skillNames={seer:'预兆：获得 3 点护盾',doctor:'疗愈：恢复 5 点生命',thief:'灵巧：获得 1 点能量'};$('heroSkill').textContent=skillNames[selected]+(state.skillUsed?'（本回合已使用）':'');$('heroSkill').disabled=state.over||state.skillUsed;$('round').textContent='第 '+state.round+' 回合 · 你的行动';
 $('hand').innerHTML='';
 state.hand.forEach((card,i)=>{const b=document.createElement('button');b.className='card';b.disabled=state.over||state.energy<card.cost;b.innerHTML='<span class="cost">'+card.cost+'</span><div class="symbol">'+card.symbol+'</div><strong>'+card.name+'</strong><p>'+card.desc+'</p>';b.addEventListener('click',()=>play(i));$('hand').append(b)});
 const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary').textContent=completed+' / 5 已完成';$('gateArea').classList.toggle('active',state.gatePhase);state.gates.forEach((g,i)=>{$('gatePct'+i).textContent=g.progress>=100?'已开启':g.progress+'%';$('gateBar'+i).style.width=g.progress+'%';$('gateCard'+i).classList.toggle('open',g.progress>=100);$('gate'+i).disabled=!state.gatePhase||state.over||state.energy<1||g.progress>=100});const opened=state.gates.filter(g=>g.progress>=100).length;$('gateSummary').textContent=opened+' / 2 扇大门已开启';$('gateHint').textContent=state.gatePhase?'监管者会持续施压，破译大门时请留意生命与能量。':'五台密码机全部完成后，选择一扇大门继续破译。';$('escape').classList.toggle('ready',opened>0);$('cipherGrid').innerHTML=state.ciphers.map(x=>'<div class="cipher '+(x.progress>=100?'done':'')+'"><div class="cipher-name">密码机 '+String(x.id).padStart(2,'0')+'</div><div class="cipher-track"><span style="width:'+x.progress+'%"></span></div><div class="cipher-percent">'+(x.progress>=100?'✓ 完成':x.progress+'%')+'</div></div>').join('');const target=state.ciphers.find(x=>x.progress<100);$('cipherHint').textContent=target?'当前目标：密码机 '+String(target.id).padStart(2,'0')+'。每次破译推进 35%'+(selected==='thief'?'（慈善家额外 +5%）':'')+'。':'五台密码机全部破译完成！';$('decode').disabled=state.over||state.energy<1||!target;$('endTurn').disabled=state.over;$('redraw').disabled=state.over||state.energy<1||!state.hand.length;
 }
+function useSkill(){if(state.over||state.skillUsed)return;state.skillUsed=true;if(selected==='seer'){state.shield+=3;log('先知发动「预兆」：获得 3 点护盾。')}else if(selected==='doctor'){const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);log('医生发动「疗愈」：恢复 '+(state.hp-before)+' 点生命。')}else{const before=state.energy;state.energy=Math.min(5,state.energy+1);log('慈善家发动「灵巧」：获得 '+(state.energy-before)+' 点能量。')}render()}
 function play(i){
 const c=state.hand[i];if(!c||state.energy<c.cost||state.over)return;state.energy-=c.cost;state.hand.splice(i,1);
 switch(c.type){
@@ -103,7 +105,7 @@ const dmg=Math.max(1,4+Math.floor(state.round/4)+(state.gatePhase?2:0)-state.wea
 const blocked=Math.min(state.shield,dmg);state.shield-=blocked;const actual=dmg-blocked;state.hp-=actual;state.fear+=2;
 log('监管者逼近：攻击 '+dmg+' 点，护盾抵挡 '+blocked+' 点，你损失 '+actual+' 点生命。');
 check();if(state.over)return;
-state.round++;state.energy=Math.min(5,state.hero.energy+Math.min(1,Math.floor((state.round-1)/3)));draw(Math.max(0,3-state.hand.length));render();
+state.round++;state.skillUsed=false;state.energy=Math.min(5,state.hero.energy+Math.min(1,Math.floor((state.round-1)/3)));draw(Math.max(0,3-state.hand.length));render();
 }
 function decodeGate(i){if(state.over||!state.gatePhase||state.energy<1||state.gates[i].progress>=100)return;state.energy--;const gain=selected==='thief'?40:35;const gate=state.gates[i];const before=gate.progress;gate.progress=Math.min(100,gate.progress+gain);log((i===0?'东侧':'西侧')+'大门破译：'+before+'% → '+gate.progress+'%。');if(gate.progress>=100)log((i===0?'东侧':'西侧')+'大门已开启！你可以选择立即逃脱。');render()}
 function check(){
@@ -111,7 +113,7 @@ if(state.enemyHp<=0){state.enemyHp=0;finish(true);return}
 if(state.hp<=0){state.hp=0;finish(false)}
 }
 function finish(win,escaped=false){state.over=true;$('resultTitle').textContent=win?'雾散之后':'庄园留住了你';const decoded=state.ciphers.filter(x=>x.progress>=100).length;$('resultText').textContent=win?(escaped?'你成功穿过逃生大门，离开了这座被浓雾吞噬的庄园。':'你击退了监管者，暂时赢得了喘息机会。真正的出口，也许还在更深处。'):'你的脚步停在浓雾里。整理手牌，再试一次吧。';$('overlay').classList.add('show')}
-$('start').addEventListener('click',start);
+$('start').addEventListener('click',start);$('heroSkill').addEventListener('click',useSkill);
 $('endTurn').addEventListener('click',enemyTurn);$('decode').addEventListener('click',decode);$('gate0').addEventListener('click',()=>decodeGate(0));$('gate1').addEventListener('click',()=>decodeGate(1));$('escape').addEventListener('click',()=>{if(state.gates.some(g=>g.progress>=100))finish(true,true)});
 $('redraw').addEventListener('click',()=>{if(state.energy<1||!state.hand.length)return;state.energy--;state.hand=state.hand.slice(1);draw(1);log('你放弃一张手牌，重新寻找机会。');render()});
 $('restart').addEventListener('click',()=>{$('overlay').classList.remove('show');$('game').classList.remove('active');$('setup').classList.remove('hidden')});
