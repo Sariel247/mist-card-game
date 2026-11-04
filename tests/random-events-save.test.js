@@ -20,7 +20,7 @@ has('state.round%3===1&&state.eventsTriggered<4','events occur after completed r
 for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现','破译干扰'])has(name,'event exists: '+name);
 has("localStorage.setItem(SAVE_KEY,JSON.stringify({state,selected,savedAt:Date.now()}))",'autosave persists game state');
 has('function restoreGame()','restore function exists');
-has('state.hunterRoleDef=hunterRoleDefs[state.hunterRole]||hunterRoleDefs.queen','restore rehydrates hunter role definition');
+has('state.hunterRoleDef=hunterRoleDefs[state.hunterRole]','restore rehydrates validated hunter role definition');
 has('state.hunterBaseSkill=hunterBasePool.find','restore rehydrates base skill');
 has('state.hunterSpecialSkill=hunterSpecialPool.find','restore rehydrates special skill');
 has('persistGame();','render triggers autosave');
