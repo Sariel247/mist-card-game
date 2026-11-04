@@ -66,7 +66,7 @@ for(const card of deck){
  const drawStart=script.indexOf('function draw(n=1){');
  const drawEnd=script.indexOf('\nfunction gainFury',drawStart);
  assert(drawStart>=0&&drawEnd>drawStart,'draw function boundaries found');
- const drawBody=script.slice(drawStart+'function draw(n=1){'.length,drawEnd).replace(/\\}\\s*$/,'');
+ const drawBody=script.slice(drawStart+'function draw(n=1){'.length,drawEnd).replace(/\}\\s*$/,'');
  const state={deck:[],hand:[]};
  const drawCards=new Function('state','deck','shuffle','return function(n=1){'+drawBody+'}')(state,deck,items=>[...items]);
  drawCards(1);
