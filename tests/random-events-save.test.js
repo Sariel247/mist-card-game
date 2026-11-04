@@ -61,4 +61,10 @@ has("check();render();",'card damage resolves lethal hunter/player health before
 has("if(state.gates.some(g=>g.progress>=100))finish(true,true)",'escaping through either fully opened gate records an escape victory');
 has("$('restart').addEventListener('click',()=>{stopWeatherAudio();try{localStorage.removeItem(SAVE_KEY)}catch(e){}state=null;",'restart clears the previous in-memory match before returning to setup');
 has("state={hero:{...c},difficulty,weather,weatherMode:$('gameMode').value",'starting a new match creates a fresh complete state object');
-console.log('Combat resolution, restart, random event, save, records and achievement source audit: 58 assertions PASS');
+has('const difficulty=validHero&&Object.values(difficulties).find(d=>d.name===savedState?.difficulty?.name);','restore accepts only a known canonical difficulty');
+has('state.difficulty=difficulty;','restore rehydrates the difficulty from trusted game definitions');
+has('Number.isFinite(savedState.hp)&&savedState.hp>0','restore rejects invalid or terminal survivor health');
+has('Number.isFinite(savedState.enemyHp)&&savedState.enemyHp>0','restore rejects invalid or terminal hunter health');
+has('Number.isInteger(savedState.round)&&savedState.round>=1','restore validates the saved round counter');
+has('savedState.hand.every(validCard)&&Array.isArray(savedState.deck)&&savedState.deck.every(validCard)','restore rejects unknown or malformed hand/deck cards');
+console.log('Save recovery, combat termination, restart and records source audit: 64 assertions PASS');
