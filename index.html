@@ -23,7 +23,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.7.2.1</div></header>
+<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.7.3</div></header>
 <section class="hero"><div class="eyebrow">THE FOG IS NEVER EMPTY</div><h1>庄园的最后一局</h1><div class="subtitle">每一张牌，都是一次选择。每一次选择，都留下代价。</div></section>
 <section class="panel setup" id="setup">
 <h2 class="section-title">选择你的求生者</h2>
@@ -120,7 +120,7 @@ case'control':state.hunterSkipAttack=1;log('迷雾束缚：陷阱已布置，监
 case'guard':state.playerGuardTurns=2;log('坚韧意志：接下来 2 次监管者攻击造成的伤害降低 30%。');break;
 case'surge':state.attackBonus+=c.value;log('破绽洞察：下一张攻击牌额外造成 '+c.value+' 点伤害。');break;
 case'thorns':state.shield+=c.value;state.reflectDamage+=c.value;log('以守为攻：获得 4 点护盾，受到监管者攻击后将反击 4 点伤害。');break;
-case'overclock':state.energy=Math.min(5,state.energy+c.value);draw(1);log('超频思维：获得 2 点能量并抽取 1 张牌。');break;
+case'overclock':state.energy=Math.min(4,state.energy+c.value);draw(1);log('超频思维：获得 2 点能量并抽取 1 张牌。');break;
 case'steady':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.value);state.shield+=2;log('稳住阵脚：恢复 '+(state.hp-old)+' 点生命并获得 2 点护盾。');break}
 case'resolve':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.value);state.shield+=3;log('意志坚定：恢复 '+(state.hp-old)+' 点生命并获得 3 点护盾。');break}
 }
@@ -136,7 +136,7 @@ else{const dmg=state.playerGuardTurns>0?Math.max(1,Math.round(baseDmg*0.7)):base
 check();if(state.over)return;
 if(controlWasActive&&state.controlTurns>0)state.controlTurns--;if(state.hunterReductionTurns>0)state.hunterReductionTurns--;if(state.playerGuardTurns>0)state.playerGuardTurns--;state.round++;state.skillUsed=false;state.energy=Math.min(4,state.energy+1);state.skillPoints=Math.min(6,state.skillPoints+2);draw(1);render();
 }
-function decodeGate(i){if(state.over||state.controlTurns>0||!state.gatePhase||state.energy<1||state.gates[i].progress>=100)return;state.energy--;const gain=selected==='thief'?40:35;const gate=state.gates[i];const before=gate.progress;gate.progress=Math.min(100,gate.progress+gain);log((i===0?'东侧':'西侧')+'大门破译：'+before+'% → '+gate.progress+'%。');if(gate.progress>=100)log((i===0?'东侧':'西侧')+'大门已开启！你可以选择立即逃脱。');render()}
+function decodeGate(i){if(state.over||state.controlTurns>0||!state.gatePhase||state.energy<1||state.gates[i].progress>=100)return;state.energy--;const gain=selected==='thief'?25:20;const gate=state.gates[i];const before=gate.progress;gate.progress=Math.min(100,gate.progress+gain);log((i===0?'东侧':'西侧')+'大门破译：'+before+'% → '+gate.progress+'%。');if(gate.progress>=100)log((i===0?'东侧':'西侧')+'大门已开启！你可以选择立即逃脱。');render()}
 function check(){
 if(state.enemyHp<=0){state.enemyHp=0;finish(true);return}
 if(state.hp<=0){state.hp=0;finish(false)}
