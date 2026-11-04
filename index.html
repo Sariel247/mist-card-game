@@ -227,7 +227,28 @@ const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary
 }
 function useSkill(){if(state.over)return;if(selected==='doctor'){if(state.doctorCooldown>0||state.hp>=state.hero.hp)return;const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);state.doctorCooldown=2;state.doctorCooldownSetRound=state.round;log('医生发动「医药专精」：恢复 '+(state.hp-before)+' 点生命，接下来 2 个完整回合无法再次使用。');}else if(selected==='perfumer'&&!state.perfumerUsed&&!state.perfumerArmed){state.perfumerArmed=true;log('调香师发动「忘忧之香」：香水已准备，下一次受到生命伤害后恢复最多 4 点生命，本局仅此一次。');}else if(selected==='mechanic'&&state.mechanicUses>0){const target=state.ciphers.find(x=>x.progress<100);if(!target)return;const before=target.progress;const statuePenalty=state.decodePenaltyRound===state.round?state.decodePenalty:0;const coldPenalty=weatherDecodePenalty();const gain=Math.max(0,20-statuePenalty-coldPenalty);state.mechanicUses--;target.progress=Math.min(100,target.progress+gain);trackCipherFury(before,target.progress);log('机械师发动「机械傀儡」：傀儡独立校准密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。本局剩余 '+state.mechanicUses+' 次。'+(statuePenalty?'（雕像封锁 -'+statuePenalty+'%）':'')+(coldPenalty?'（寒潮 -'+coldPenalty+'%）':''));if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();}render()}
 function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;state.damageDealt=(state.damageDealt||0)+reduced;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 30%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
-function chooseHunterSkill(){if(state.hunterSkillUsedRound===state.round)return;const skills=[state.hunterRoleSkill,state.hunterBaseSkill,state.hunterSpecialSkill].filter(hunterSkillReady);if(!skills.length)return;const scored=skills.map(skill=>({skill,score:skill.score?skill.score():5})).sort((a,b)=>b.score-a.score);if(scored[0].score>=5)useHunterSkill(scored[0].skill.id);}
+function getHunterSkillScore(skill){
+const unfinished=state.ciphers.filter(x=>x.progress<100),cipherLead=unfinished.length?Math.max(...unfinished.map(x=>x.progress)):0,gateLead=state.gates.length?Math.max(...state.gates.map(x=>x.progress)):0,playerTotal=state.hp+state.shield,enemyRatio=state.enemyHp/state.difficulty.enemyHp;
+switch(skill.id){
+case'queenMirror':return playerTotal<=14?10:playerTotal<=22?8:state.gatePhase?7:5;
+case'sculptorSeal':return !state.gatePhase&&unfinished.length&&cipherLead>=55?10:!state.gatePhase&&unfinished.length&&cipherLead>=30?7:0;
+case'jackFogblade':return state.shield>=5?10:state.shield>0?8:0;
+case'control':return state.gatePhase&&gateLead>=55?10:state.gatePhase&&gateLead>=25?9:unfinished.length&&cipherLead>=65?9:unfinished.length&&cipherLead>=40&&state.hand.length>=3?8:state.hand.length>=4?7:4;
+case'rampage':return playerTotal<=14?10:playerTotal<=22?8:state.gatePhase?7:5;
+case'interference':return unfinished.length&&cipherLead>=65?10:unfinished.length&&cipherLead>=40?9:unfinished.length&&cipherLead>=20?7:0;
+case'barrier':return enemyRatio<=.25?10:enemyRatio<=.4?9:enemyRatio<=.55?7:state.gatePhase&&enemyRatio<=.7?6:0;
+case'mark':return playerTotal<=14?9:playerTotal<=22?8:state.gatePhase?7:4;
+case'bloodrage':return state.fury>=4?10:state.fury>=2?8:state.gatePhase?7:5;
+default:return 0;
+}
+}
+function chooseHunterSkill(){
+if(state.hunterSkillUsedRound===state.round)return;
+const skills=[state.hunterRoleSkill,state.hunterBaseSkill,state.hunterSpecialSkill].filter(hunterSkillReady);
+if(!skills.length)return;
+const scored=skills.map(skill=>({skill,score:getHunterSkillScore(skill)})).sort((a,b)=>b.score-a.score||a.skill.cost-b.skill.cost);
+if(scored[0].score>=6){log('监管者AI判断局势：'+scored[0].skill.name+'，策略评分 '+scored[0].score+'/10。');useHunterSkill(scored[0].skill.id);}
+}
 function play(i){
 const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over||(c.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100))))return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
 if(state.weather==='thunder'&&['attack','risk'].includes(c.type)&&state.weatherAttackResourceUsedRound!==state.round){state.weatherAttackResourceUsedRound=state.round;grantWeatherResource('energy',weatherTier(),'雷暴首次攻击牌连携');}
