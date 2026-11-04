@@ -46,7 +46,7 @@ has("$('redraw').addEventListener('click',()=>{if(!state||state.over||",'redraw 
 has("const validHero=saved&&Object.prototype.hasOwnProperty.call(characters,saved.selected);",'restore validates the saved survivor key before applying the save');
 has("Object.prototype.hasOwnProperty.call(weatherDefs,savedState.weather)&&Object.prototype.hasOwnProperty.call(hunterRoleDefs,savedState.hunterRole)",'restore validates saved weather and hunter role identifiers');
 has("savedState.ciphers.length===5&&Array.isArray(savedState.gates)&&savedState.gates.length===2",'restore validates the five cipher machines and two gates');
-has("savedState.ciphers.every(c=>c&&Number.isFinite(c.progress)",'restore rejects invalid cipher progress values');
+has("savedState.ciphers.every((c,i)=>c&&c.id===i+1&&Number.isFinite(c.progress)",'restore rejects invalid cipher progress values');
 has("savedState.gates.every(g=>g&&Number.isFinite(g.progress)",'restore rejects invalid gate progress values');
 has("if(!validState||!baseSkill||!specialSkill)throw new Error",'restore rejects malformed saves or missing skill definitions');
 has("state.hero={...characters[selected]}",'restore rehydrates the selected survivor from canonical character data');
