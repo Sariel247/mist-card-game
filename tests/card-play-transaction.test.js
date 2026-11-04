@@ -62,4 +62,19 @@ for(const card of deck){
 {
  const state=fresh(deck[0]);run(state,99);assert.equal(state.hand.length,1);assert.equal(state.energy,20);
 }
-console.log('Card play transaction: '+executed+' card branches + 7 rejected-operation cases PASS');
+{
+ const drawStart=script.indexOf('function draw(n=1){');
+ const drawEnd=script.indexOf('\nfunction gainFury',drawStart);
+ assert(drawStart>=0&&drawEnd>drawStart,'draw function boundaries found');
+ const drawBody=script.slice(drawStart+'function draw(n=1){'.length,drawEnd).replace(/\\}\\s*$/,'');
+ const state={deck:[],hand:[]};
+ const drawCards=new Function('state','deck','shuffle','return function(n=1){'+drawBody+'}')(state,deck,items=>[...items]);
+ drawCards(1);
+ assert.equal(state.deck.length,47,'reshuffle restores 48 cards before drawing one');
+ assert.equal(state.hand.length,1,'one requested card is drawn');
+ const counts=new Map();
+ [...state.deck,...state.hand].forEach(card=>counts.set(card.id,(counts.get(card.id)||0)+1));
+ assert.equal(counts.size,24,'full reshuffled deck contains all 24 card types');
+ assert([...counts.values()].every(count=>count===2),'full reshuffled deck preserves two copies of every card');
+}
+console.log('Card play transaction: '+executed+' card branches + 7 rejected-operation cases + 4 deck recycle assertions PASS');
