@@ -27,4 +27,4 @@ has("SAVE_KEY+'-records'",'career records are stored separately from active save
 for(const achievement of ['first_win','escape_artist','cipher_master','event_explorer','hard_survivor'])has(achievement,'achievement exists: '+achievement);
 has("state.difficulty.name===difficulties.hard.name",'hard achievement works after JSON restore');
 has("data[mode]",'standard and custom records are kept separately');
-console.log('Random event, save, records and achievement source audit: 32 assertions PASS');
+console.log('Random event, save, records and achievement source audit: 30 assertions PASS');
