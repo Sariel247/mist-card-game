@@ -66,5 +66,12 @@ has('state.difficulty=difficulty;','restore rehydrates the difficulty from trust
 has('Number.isFinite(savedState.hp)&&savedState.hp>0','restore rejects invalid or terminal survivor health');
 has('Number.isFinite(savedState.enemyHp)&&savedState.enemyHp>0','restore rejects invalid or terminal hunter health');
 has('Number.isInteger(savedState.round)&&savedState.round>=1','restore validates the saved round counter');
+has("['standard','custom'].includes(savedState.weatherMode)",'restore accepts only known standard/custom match modes');
+has("Number.isFinite(savedState.shield)&&savedState.shield>=0",'restore rejects invalid negative or non-finite shield values');
+has("Number.isFinite(savedState.hunterSkillPoints)&&savedState.hunterSkillPoints>=0&&savedState.hunterSkillPoints<=6",'restore validates hunter skill points within the shared cap');
+has("Number.isFinite(savedState.fury)&&savedState.fury>=0",'restore rejects invalid hunter fury values');
+has("Number.isInteger(savedState.eventsTriggered)&&savedState.eventsTriggered>=0&&savedState.eventsTriggered<=4",'restore validates the four-event match limit');
+has("c.id===i+1",'restore validates ordered cipher identities as well as progress');
+has("Object.prototype.hasOwnProperty.call(weatherDefs,savedState.weather)",'restore rejects inherited or unknown weather keys');
 has('savedState.hand.every(validCard)&&Array.isArray(savedState.deck)&&savedState.deck.every(validCard)','restore rejects unknown or malformed hand/deck cards');
-console.log('Save recovery, combat termination, restart and records source audit: 64 assertions PASS');
+console.log('Save recovery, combat termination, restart and records source audit: 71 assertions PASS');
