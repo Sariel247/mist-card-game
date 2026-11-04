@@ -23,7 +23,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.7.3</div></header>
+<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.7.4</div></header>
 <section class="hero"><div class="eyebrow">THE FOG IS NEVER EMPTY</div><h1>庄园的最后一局</h1><div class="subtitle">每一张牌，都是一次选择。每一次选择，都留下代价。</div></section>
 <section class="panel setup" id="setup">
 <h2 class="section-title">选择你的求生者</h2>
@@ -32,12 +32,13 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 <button class="character" data-id="doctor"><img class="portrait" src="https://patchwiki.biligame.com/images/dwrg/thumb/f/f4/qidge0im3lrywdad9qao0o8omcvgyob.png/75px-%E5%8C%BB%E7%94%9F%E5%A4%B4%E5%83%8F2.png" alt="医生艾米丽头像"><h3>医生 · 艾米丽</h3><p>擅长自我修复。治疗行动效果更强。</p><div class="tag">天赋：疗愈</div></button>
 <button class="character" data-id="thief"><img class="portrait" src="https://patchwiki.biligame.com/images/dwrg/thumb/b/b3/s0cu5s92kmpic4lpw3sivwh90hraow1.png/75px-%E2%80%9C%E6%85%88%E5%96%84%E5%AE%B6%E2%80%9D%E5%A4%B4%E5%83%8F2.png" alt="慈善家克利切头像"><h3>慈善家 · 克利切</h3><p>行动灵活，善于寻找机会。初始能量更多。</p><div class="tag">天赋：灵巧</div></button>
 </div>
-<div class="ai-note"><strong>监管者行为：</strong>专精由监管者在开局时秘密决定。它会观察你的状态，在关键时机自动使用技能。</div>\n<div class="difficulty-box"><label for="difficulty">选择监管者难度</label><select id="difficulty"><option value="easy">简单 · 迷雾漫游（适合熟悉规则）</option><option value="normal" selected>普通 · 庄园追猎（标准体验）</option><option value="hard">困难 · 深渊凝视（高压挑战）</option></select><div class="difficulty-note" id="difficultyNote">普通：监管者生命 40，基础攻击 5，开启大门后压迫提升。</div></div>
+<div class="ai-note"><strong>监管者行为：</strong>专精由监管者在开局时秘密决定。它会观察你的状态，在关键时机自动使用技能。</div>
+<div class="difficulty-box"><label for="difficulty">选择监管者难度</label><select id="difficulty"><option value="easy">简单 · 迷雾漫游（适合熟悉规则）</option><option value="normal" selected>普通 · 庄园追猎（标准体验）</option><option value="hard">困难 · 深渊凝视（高压挑战）</option></select><div class="difficulty-note" id="difficultyNote">普通：监管者生命 44，基础攻击 5，开启大门后压迫提升。</div></div>
 <button class="start" id="start">踏入迷雾</button>
 </section>
 <section class="game" id="game">
 <div class="arena">
-<div class="panel fighter enemy"><div class="fighter-head"><div><div class="role">THE HUNTER</div><div class="fighter-name">监管者 · 雾中人</div></div><div class="sigil">♜</div></div><div class="stats"><div class="stat">生命<b id="enemyHp">30</b></div><div class="stat">压迫<b id="enemyFear">0</b></div></div><div class="bar"><span id="enemyBar" style="width:100%"></span></div></div>
+<div class="panel fighter enemy"><div class="fighter-head"><div><div class="role">THE HUNTER</div><div class="fighter-name">监管者 · 雾中人</div></div><div class="sigil">♜</div></div><div class="stats"><div class="stat">生命<b id="enemyHp">30</b></div></div><div class="bar"><span id="enemyBar" style="width:100%"></span></div></div>
 <div class="panel fighter player"><div class="fighter-head"><div><div class="role">THE SURVIVOR</div><div class="fighter-name" id="playerName">先知 · 伊莱</div></div><div class="sigil">♙</div></div><div class="stats"><div class="stat">生命<b id="playerHp">24</b></div><div class="stat">能量<b id="energy">2</b></div><div class="stat">技能点<b id="skillPoints">3</b></div><div class="stat">护盾<b id="shield">3</b></div></div><div class="bar"><span id="playerBar" style="width:100%"></span></div></div>
 </div>
 <div class="actions skill-actions"><button class="action" id="heroSkill">使用角色技能</button></div>
@@ -57,16 +58,16 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 const characters={
 seer:{name:'先知 · 伊莱',hp:24,energy:2,shield:3,heal:3,bonus:'预兆'},
 doctor:{name:'医生 · 艾米丽',hp:28,energy:2,shield:0,heal:6,bonus:'疗愈'},
-thief:{name:'慈善家 · 克利切',hp:24,energy:3,shield:0,heal:3,bonus:'灵巧'}
+thief:{name:'慈善家 · 克利切',hp:24,energy:2,shield:0,heal:3,bonus:'灵巧'}
 };
 const deck=[
 {id:'strike',name:'破雾一击',symbol:'⚔',cost:1,skillCost:1,desc:'对监管者造成 6 点伤害。',type:'attack',value:6},
-{id:'focus',name:'冷静观察',symbol:'⌕',cost:1,skillCost:1,desc:'获得 2 点能量，并抽取一张牌。',type:'focus',value:2},
-{id:'heal',name:'急救包',symbol:'✚',cost:2,skillCost:2,desc:'恢复 7 点生命。医生恢复 10 点。',type:'heal',value:7},
+{id:'focus',name:'冷静观察',symbol:'⌕',cost:1,skillCost:1,desc:'获得 1 点能量，并抽取一张牌。',type:'focus',value:1},
+{id:'heal',name:'急救包',symbol:'✚',cost:2,skillCost:2,desc:'恢复 9 点生命。医生恢复 12 点。',type:'heal',value:9},
 {id:'evade',name:'翻窗闪避',symbol:'↗',cost:1,skillCost:1,desc:'获得 5 点护盾，抵挡下一次攻击。',type:'shield',value:5},
 {id:'ambush',name:'声东击西',symbol:'♧',cost:2,skillCost:3,desc:'造成 10 点伤害，但自身承受 2 点反噬。',type:'risk',value:10},
-{id:'insight',name:'密码推演',symbol:'⌘',cost:1,skillCost:1,desc:'削弱监管者警戒，本回合攻击降低。',type:'weaken',value:3},
-{id:'resolve',name:'绝境意志',symbol:'✧',cost:2,skillCost:2,desc:'恢复 4 点生命并获得 3 点护盾。',type:'resolve',value:4},
+{id:'insight',name:'密码推演',symbol:'⌘',cost:1,skillCost:1,desc:'使监管者下一次攻击降低 4 点。',type:'weaken',value:4},
+{id:'resolve',name:'绝境意志',symbol:'✧',cost:2,skillCost:2,desc:'恢复 5 点生命并获得 4 点护盾。',type:'resolve',value:5},
 {id:'counter',name:'精准反制',symbol:'◈',cost:2,skillCost:2,desc:'对监管者造成 8 点伤害。',type:'attack',value:8},
 {id:'calibrate',name:'快速校准',symbol:'⌘',cost:1,skillCost:1,desc:'立即推进当前密码机 30% 进度。',type:'decode',value:30},
 {id:'gatekit',name:'大门工具箱',symbol:'⚿',cost:1,skillCost:1,desc:'通电后使用：推进当前大门 30% 进度。',type:'gate',value:30},
@@ -74,42 +75,42 @@ const deck=[
 {id:'fogtrap',name:'迷雾束缚',symbol:'⌁',cost:2,skillCost:2,desc:'布下陷阱，使监管者下一次攻击落空。',type:'control',value:1},
 {id:'fortify',name:'坚韧意志',symbol:'▣',cost:1,skillCost:2,desc:'接下来 2 次监管者攻击造成的伤害降低 30%。',type:'guard',value:2},
 {id:'opening',name:'破绽洞察',symbol:'✦',cost:1,skillCost:1,desc:'下一张攻击牌额外造成 4 点伤害。',type:'surge',value:4},
-{id:'thorns',name:'以守为攻',symbol:'⛨',cost:2,skillCost:2,desc:'获得 4 点护盾；受到攻击后反击监管者 4 点伤害。',type:'thorns',value:4},
-{id:'overclock',name:'超频思维',symbol:'⌬',cost:1,skillCost:1,desc:'获得 2 点能量，并额外抽取 1 张牌。',type:'overclock',value:2},
-{id:'steady',name:'稳住阵脚',symbol:'✧',cost:1,skillCost:1,desc:'恢复 4 点生命，并获得 2 点护盾。',type:'steady',value:4},
-{id:'pulse',name:'破译脉冲',symbol:'⌘',cost:2,skillCost:3,desc:'当前密码机立即推进 45% 进度。',type:'decode',value:45}
+{id:'thorns',name:'以守为攻',symbol:'⛨',cost:2,skillCost:2,desc:'获得 4 点护盾；下次受到攻击时反击 4 点伤害，反击储备最多 8 点。',type:'thorns',value:4},
+{id:'overclock',name:'超频思维',symbol:'⌬',cost:1,skillCost:1,desc:'获得 2 点能量。',type:'overclock',value:2},
+{id:'steady',name:'稳住阵脚',symbol:'✧',cost:1,skillCost:1,desc:'恢复 3 点生命，并获得 2 点护盾。',type:'steady',value:3},
+{id:'pulse',name:'破译脉冲',symbol:'⌘',cost:2,skillCost:3,desc:'当前密码机立即推进 50% 进度。',type:'decode',value:50}
 ];
-const difficulties={easy:{name:"简单",enemyHp:30,damage:3,roundDamage:0.5,gateBonus:1,interference:0.2,gateLoss:8},normal:{name:"普通",enemyHp:40,damage:5,roundDamage:0.75,gateBonus:2,interference:0.35,gateLoss:12},hard:{name:"困难",enemyHp:52,damage:7,roundDamage:1,gateBonus:3,interference:0.5,gateLoss:18}};
+const difficulties={easy:{name:"简单",enemyHp:30,damage:3,roundDamage:0.5,gateBonus:1,interference:0.2,gateLoss:8},normal:{name:"普通",enemyHp:44,damage:5,roundDamage:0.75,gateBonus:2,interference:0.35,gateLoss:12},hard:{name:"困难",enemyHp:56,damage:7,roundDamage:1,gateBonus:3,interference:0.5,gateLoss:18}};
 let selected='seer',state=null,serial=0;
 const $=id=>document.getElementById(id);
 document.querySelectorAll('.character').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.character').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selected=b.dataset.id}));
-function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function shuffle(a){const copy=[...a];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
 function log(msg){const p=document.createElement('p');p.textContent=msg;$('log').prepend(p)}
 function draw(n=1){for(let i=0;i<n;i++){if(!state.deck.length)state.deck=shuffle(deck);state.hand.push(state.deck.pop())}}
 function start(){
-const c=characters[selected],difficulty=difficulties[$('difficulty').value],hunterSpecialty=Math.random()<0.5?'reduce':'boost';state={hero:{...c},difficulty,hunterSpecialty,hp:c.hp,shield:c.shield,energy:c.energy,skillPoints:3,enemyHp:difficulty.enemyHp,fear:0,round:1,hand:[],deck:shuffle([...deck,...deck]),weaken:0,skillUsed:false,ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),gates:[{progress:0},{progress:0}],gatePhase:false,over:false,controlTurns:0,hunterReductionTurns:0,hunterDamageBonus:0,hunterCooldowns:{control:0,reduce:0,boost:0},hunterSkipAttack:0,playerGuardTurns:0,reflectDamage:0,attackBonus:0};
+const c=characters[selected],difficulty=difficulties[$('difficulty').value],hunterSpecialty=Math.random()<0.5?'reduce':'boost';state={hero:{...c},difficulty,hunterSpecialty,hp:c.hp,shield:c.shield,energy:c.energy,skillPoints:3,enemyHp:difficulty.enemyHp,round:1,hand:[],deck:shuffle([...deck,...deck]),weaken:0,skillUsed:false,ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),gates:[{progress:0},{progress:0}],gatePhase:false,over:false,controlTurns:0,hunterReductionTurns:0,hunterDamageBonus:0,hunterCooldowns:{control:0,reduce:0,boost:0},hunterSkipAttack:0,playerGuardTurns:0,reflectDamage:0,attackBonus:0};
 $('setup').classList.add('hidden');$('game').classList.add('active');$('overlay').classList.remove('show');$('playerName').textContent=c.name;$('log').innerHTML='';log('你选择了'+c.name+'。庄园的大门在身后缓缓合拢。');log('监管者已进入狩猎状态，正在根据你的行动调整策略。');draw(3);render();
 }
 function render(){
-$('playerHp').textContent=state.hp;$('enemyHp').textContent=state.enemyHp;$('energy').textContent=state.energy;$('skillPoints').textContent=state.skillPoints;$('shield').textContent=state.shield;$('enemyFear').textContent=state.fear;
-$('playerBar').style.width=Math.max(0,state.hp/state.hero.hp*100)+'%';$('enemyBar').style.width=Math.max(0,state.enemyHp/state.difficulty.enemyHp*100)+'%';const skillNames={seer:'预兆：获得 3 点护盾',doctor:'疗愈：恢复 5 点生命',thief:'灵巧：获得 1 点能量'};$('heroSkill').textContent=skillNames[selected]+(state.skillUsed?'（本回合已使用）':'');$('heroSkill').disabled=state.over||state.skillUsed;$('round').textContent='第 '+state.round+' 回合 · 你的行动'+(state.controlTurns>0?' · 受到束缚':'');$('hunterStatus').innerHTML=(state.controlTurns?'你正受到束缚，下一回合无法打牌或破译。 ':'')+(state.hunterReductionTurns?'监管者的坚壁状态仍在持续。 ':'')+(state.hunterDamageBonus?'监管者正在蓄力，下一次攻击额外造成 3 点伤害。 ':'')+(state.hunterSkipAttack?'你的束缚陷阱已生效。 ':'')+'监管者会根据战局自动选择行动，专精暂未公开。'
+$('playerHp').textContent=state.hp;$('enemyHp').textContent=state.enemyHp;$('energy').textContent=state.energy;$('skillPoints').textContent=state.skillPoints;$('shield').textContent=state.shield;
+$('playerBar').style.width=Math.max(0,state.hp/state.hero.hp*100)+'%';$('enemyBar').style.width=Math.max(0,state.enemyHp/state.difficulty.enemyHp*100)+'%';const skillNames={seer:'预兆：获得 2 点护盾',doctor:'疗愈：恢复 3 点生命',thief:'灵巧：获得 1 点能量'};$('heroSkill').textContent=skillNames[selected]+(state.skillUsed?'（本回合已使用）':'');$('heroSkill').disabled=state.over||state.skillUsed;$('round').textContent='第 '+state.round+' 回合 · 你的行动'+(state.controlTurns>0?' · 受到束缚':'');$('hunterStatus').innerHTML=(state.controlTurns?'你正受到束缚，下一回合无法打牌或破译。 ':'')+(state.hunterReductionTurns?'监管者的坚壁状态还剩 '+state.hunterReductionTurns+' 次求生者行动。 ':'')+(state.hunterDamageBonus?'监管者正在蓄力，下一次攻击额外造成 3 点伤害。 ':'')+(state.hunterSkipAttack?'你的束缚陷阱已生效。 ':'')+'监管者会根据战局自动选择行动，专精暂未公开。'
 $('hand').innerHTML='';
-state.hand.forEach((card,i)=>{const b=document.createElement('button');b.className='card';b.disabled=state.over||state.controlTurns>0||state.energy<card.cost||state.skillPoints<card.skillCost||(card.type==='gate'&&!state.gatePhase)||(card.type==='decode'&&!state.ciphers.some(x=>x.progress<100));b.innerHTML='<span class="cost">⚡'+card.cost+'</span><span class="skill-cost">✦'+card.skillCost+'</span><div class="symbol">'+card.symbol+'</div><strong>'+card.name+'</strong><p>'+card.desc+'</p>';b.addEventListener('click',()=>play(i));$('hand').append(b)});
+state.hand.forEach((card,i)=>{const b=document.createElement('button');b.className='card';b.disabled=state.over||state.controlTurns>0||state.energy<card.cost||state.skillPoints<card.skillCost||(card.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100)))||(card.type==='decode'&&!state.ciphers.some(x=>x.progress<100));b.innerHTML='<span class="cost">⚡'+card.cost+'</span><span class="skill-cost">✦'+card.skillCost+'</span><div class="symbol">'+card.symbol+'</div><strong>'+card.name+'</strong><p>'+card.desc+'</p>';b.addEventListener('click',()=>play(i));$('hand').append(b)});
 const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary').textContent=completed+' / 5 已完成';$('gateArea').classList.toggle('active',state.gatePhase);state.gates.forEach((g,i)=>{$('gatePct'+i).textContent=g.progress>=100?'已开启':g.progress+'%';$('gateBar'+i).style.width=g.progress+'%';$('gateCard'+i).classList.toggle('open',g.progress>=100);$('gate'+i).disabled=!state.gatePhase||state.over||state.controlTurns>0||state.energy<1||g.progress>=100});const opened=state.gates.filter(g=>g.progress>=100).length;$('gateSummary').textContent=opened+' / 2 扇大门已开启';$('gateHint').textContent=state.gatePhase?'监管者会持续施压，破译大门时请留意生命与能量。':'五台密码机全部完成后，选择一扇大门继续破译。';$('escape').classList.toggle('ready',opened>0);$('cipherGrid').innerHTML=state.ciphers.map(x=>'<div class="cipher '+(x.progress>=100?'done':'')+'"><div class="cipher-name">密码机 '+String(x.id).padStart(2,'0')+'</div><div class="cipher-track"><span style="width:'+x.progress+'%"></span></div><div class="cipher-percent">'+(x.progress>=100?'✓ 完成':x.progress+'%')+'</div></div>').join('');const target=state.ciphers.find(x=>x.progress<100);$('cipherHint').textContent=target?'当前目标：密码机 '+String(target.id).padStart(2,'0')+'。每次破译推进 20%'+(selected==='thief'?'（慈善家额外 +5%）':'')+'。':'五台密码机全部破译完成！';$('decode').disabled=state.over||state.controlTurns>0||state.energy<1||!target;$('endTurn').disabled=state.over;$('redraw').disabled=state.over||state.controlTurns>0||state.energy<1||!state.hand.length;
 }
-function useSkill(){if(state.over||state.skillUsed)return;state.skillUsed=true;if(selected==='seer'){state.shield+=3;log('先知发动「预兆」：获得 3 点护盾。')}else if(selected==='doctor'){const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);log('医生发动「疗愈」：恢复 '+(state.hp-before)+' 点生命。')}else{const before=state.energy;state.energy=Math.min(4,state.energy+1);log('慈善家发动「灵巧」：获得 '+(state.energy-before)+' 点能量。')}render()}
+function useSkill(){if(state.over||state.skillUsed)return;state.skillUsed=true;if(selected==='seer'){state.shield+=2;log('先知发动「预兆」：获得 2 点护盾。')}else if(selected==='doctor'){const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+3);log('医生发动「疗愈」：恢复 '+(state.hp-before)+' 点生命。')}else{const before=state.energy;state.energy=Math.min(4,state.energy+1);log('慈善家发动「灵巧」：获得 '+(state.energy-before)+' 点能量。')}render()}
 function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 30%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
-function useHunterSkill(type){if(state.over||state.hunterCooldowns[type]>state.round)return;if(type!=="control"&&type!==state.hunterSpecialty)return;state.hunterCooldowns[type]=state.round+(type==="control"?3:5);if(type==="control"){state.controlTurns=1;log("监管者判断你手中资源充足，发动「控制」：你下回合无法打出卡牌或破译，但仍可使用角色技能。");}else if(type==="reduce"){state.hunterReductionTurns=3;log("监管者察觉自身受到威胁，发动「坚壁」：接下来 2 个求生者行动回合受到的伤害降低 30%。");}else{state.hunterDamageBonus=3;log("监管者发现你状态虚弱，发动「追猎」：本次攻击额外造成 3 点伤害。");}}
+function useHunterSkill(type){if(state.over||state.hunterCooldowns[type]>state.round)return;if(type!=="control"&&type!==state.hunterSpecialty)return;state.hunterCooldowns[type]=state.round+(type==="control"?4:5);if(type==="control"){state.controlTurns=1;log("监管者判断你手中资源充足，发动「控制」：你下回合无法打出卡牌或破译，但仍可使用角色技能。");}else if(type==="reduce"){state.hunterReductionTurns=3;log("监管者察觉自身受到威胁，发动「坚壁」：接下来 2 个求生者行动回合受到的伤害降低 30%。");}else{state.hunterDamageBonus=3;log("监管者发现你状态虚弱，发动「追猎」：本次攻击额外造成 3 点伤害。");}}
 function chooseHunterSkill(){const canControl=state.hunterCooldowns.control<=state.round;const canSpecial=state.hunterCooldowns[state.hunterSpecialty]<=state.round;const hpRatio=state.hp/state.hero.hp;const effectiveHp=state.hp+state.shield;const handPressure=state.hand.length>=3&&state.energy>=2;const progressThreat=state.gatePhase?state.gates.some(g=>g.progress>=45&&g.progress<100):state.ciphers.filter(c=>c.progress>=65&&c.progress<100).length>=2;let choice=null;
 if(canControl){let score=0;if(handPressure)score+=3;if(progressThreat)score+=3;if(state.energy>=4)score+=1;if(state.gatePhase)score+=2;if(state.hand.length<=1)score-=2;if(Math.random()<Math.min(.9,score/9))choice='control';}
 if(canSpecial){if(state.hunterSpecialty==='reduce'){let score=0;if(state.enemyHp/state.difficulty.enemyHp<.55)score+=4;if(state.enemyHp/state.difficulty.enemyHp<.35)score+=2;if(state.gatePhase)score+=1;if(state.hunterReductionTurns>0)score-=5;if(Math.random()<Math.min(.9,score/7))choice='reduce';}else{let score=0;if(effectiveHp<=16)score+=4;if(hpRatio<.5)score+=2;if(state.gatePhase)score+=2;if(state.shield===0)score+=1;if(Math.random()<Math.min(.9,score/7))choice='boost';}}
 if(choice)useHunterSkill(choice);}
 function play(i){
-const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over)return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
+const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over||(c.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100))))return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
 switch(c.type){
 case'attack':{const bonus=state.attackBonus||0;state.attackBonus=0;const dealt=damageHunter(c.value+bonus);log(c.name+'：造成 '+dealt+' 点伤害'+(bonus?'（含额外 '+bonus+' 点）':'')+'。');break;}
-case'focus':state.energy=Math.min(4,state.energy+c.value);draw(1);log('你稳住心神，重新掌握节奏。');break;
-case'heal':{const v=state.hero.heal===6?10:c.value;const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+v);log('治疗恢复 '+(state.hp-old)+' 点生命。');break}
+case'focus':state.energy=Math.min(4,state.energy+c.value);draw(1);log('冷静观察：获得 '+c.value+' 点能量，并抽取 1 张牌。');break;
+case'heal':{const v=selected==='doctor'?12:c.value;const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+v);log('治疗恢复 '+(state.hp-old)+' 点生命。');break}
 case'shield':state.shield+=c.value;log('你获得 '+c.value+' 点护盾。');break;
 case'risk':{const bonus=state.attackBonus||0;state.attackBonus=0;const dealt=damageHunter(c.value+bonus);state.hp-=2;log('声东击西奏效，造成 '+dealt+' 点伤害'+(bonus?'（含额外 '+bonus+' 点）':'')+'，自身受到 2 点反噬。');break;}
 case'weaken':state.weaken=c.value;log('你看穿了监管者的动作，削弱其下一次攻击。');break;
@@ -119,30 +120,30 @@ case'tactical':state.shield+=c.value;state.weaken=Math.max(state.weaken,2);log('
 case'control':state.hunterSkipAttack=1;log('迷雾束缚：陷阱已布置，监管者下一次攻击将落空。');break;
 case'guard':state.playerGuardTurns=2;log('坚韧意志：接下来 2 次监管者攻击造成的伤害降低 30%。');break;
 case'surge':state.attackBonus+=c.value;log('破绽洞察：下一张攻击牌额外造成 '+c.value+' 点伤害。');break;
-case'thorns':state.shield+=c.value;state.reflectDamage+=c.value;log('以守为攻：获得 4 点护盾，受到监管者攻击后将反击 4 点伤害。');break;
-case'overclock':state.energy=Math.min(4,state.energy+c.value);draw(1);log('超频思维：获得 2 点能量并抽取 1 张牌。');break;
+case'thorns':state.shield+=c.value;state.reflectDamage=Math.min(8,state.reflectDamage+c.value);log('以守为攻：获得 4 点护盾，反击储备提升至 '+state.reflectDamage+' 点（上限 8）。');break;
+case'overclock':{const before=state.energy;state.energy=Math.min(4,state.energy+c.value);log('超频思维：获得 '+(state.energy-before)+' 点能量。');break;}
 case'steady':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.value);state.shield+=2;log('稳住阵脚：恢复 '+(state.hp-old)+' 点生命并获得 2 点护盾。');break}
-case'resolve':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.value);state.shield+=3;log('意志坚定：恢复 '+(state.hp-old)+' 点生命并获得 3 点护盾。');break}
+case'resolve':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.value);state.shield+=4;log('绝境意志：恢复 '+(state.hp-old)+' 点生命并获得 4 点护盾。');break}
 }
 check();render();
 }
 function activateGatePhase(){if(state.ciphers.every(x=>x.progress>=100)&&!state.gatePhase){state.gatePhase=true;log('五台密码机全部完成！东、西两侧逃生大门已通电。监管者开始全力追击！')}}
-function decode(){if(state.over||state.controlTurns>0||state.energy<1)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;const gain=selected==='thief'?25:20;const before=target.progress;target.progress=Math.min(100,target.progress+gain);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();render()}
+function decode(){if(state.over||state.controlTurns>0||state.energy<1)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;const gain=selected==='thief'?23:20;const before=target.progress;target.progress=Math.min(100,target.progress+gain);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();render()}
 function enemyTurn(){
 if(state.over)return;
 const cfg=state.difficulty;const controlWasActive=state.controlTurns>0;chooseHunterSkill();const baseDmg=Math.max(1,cfg.damage+Math.floor(state.round*cfg.roundDamage/4)+(state.gatePhase?cfg.gateBonus:0)+state.hunterDamageBonus-state.weaken);state.hunterDamageBonus=0;state.weaken=0;if(state.gatePhase){const unfinished=state.gates.map((g,i)=>({g,i})).filter(x=>x.g.progress>0&&x.g.progress<100);if(unfinished.length&&Math.random()<cfg.interference){const target=unfinished[Math.floor(Math.random()*unfinished.length)];const lost=Math.min(cfg.gateLoss,target.g.progress);target.g.progress-=lost;log('监管者干扰了'+(target.i===0?'东侧':'西侧')+'大门，破译进度倒退 '+lost+'%。')}}
 if(state.hunterSkipAttack>0){state.hunterSkipAttack--;log('监管者踏入你布下的迷雾陷阱，攻击被完全打断！');}
-else{const dmg=state.playerGuardTurns>0?Math.max(1,Math.round(baseDmg*0.7)):baseDmg;if(state.playerGuardTurns>0)log('坚韧意志生效：监管者攻击由 '+baseDmg+' 降至 '+dmg+' 点。');const blocked=Math.min(state.shield,dmg);state.shield-=blocked;const actual=dmg-blocked;state.hp-=actual;state.fear+=2;log('监管者逼近：攻击 '+dmg+' 点，护盾抵挡 '+blocked+' 点，你损失 '+actual+' 点生命。');if(state.reflectDamage>0){state.enemyHp-=state.reflectDamage;log('以守为攻触发反击：监管者受到 '+state.reflectDamage+' 点伤害。');state.reflectDamage=0;}}
+else{const dmg=state.playerGuardTurns>0?Math.max(1,Math.round(baseDmg*0.7)):baseDmg;if(state.playerGuardTurns>0)log('坚韧意志生效：监管者攻击由 '+baseDmg+' 降至 '+dmg+' 点。');const blocked=Math.min(state.shield,dmg);state.shield-=blocked;const actual=dmg-blocked;state.hp-=actual;log('监管者逼近：攻击 '+dmg+' 点，护盾抵挡 '+blocked+' 点，你损失 '+actual+' 点生命。');if(state.reflectDamage>0){state.enemyHp-=state.reflectDamage;log('以守为攻触发反击：监管者受到 '+state.reflectDamage+' 点伤害。');state.reflectDamage=0;}}
 check();if(state.over)return;
 if(controlWasActive&&state.controlTurns>0)state.controlTurns--;if(state.hunterReductionTurns>0)state.hunterReductionTurns--;if(state.playerGuardTurns>0)state.playerGuardTurns--;state.round++;state.skillUsed=false;state.energy=Math.min(4,state.energy+1);state.skillPoints=Math.min(6,state.skillPoints+2);draw(1);render();
 }
-function decodeGate(i){if(state.over||state.controlTurns>0||!state.gatePhase||state.energy<1||state.gates[i].progress>=100)return;state.energy--;const gain=selected==='thief'?25:20;const gate=state.gates[i];const before=gate.progress;gate.progress=Math.min(100,gate.progress+gain);log((i===0?'东侧':'西侧')+'大门破译：'+before+'% → '+gate.progress+'%。');if(gate.progress>=100)log((i===0?'东侧':'西侧')+'大门已开启！你可以选择立即逃脱。');render()}
+function decodeGate(i){if(state.over||state.controlTurns>0||!state.gatePhase||state.energy<1||state.gates[i].progress>=100)return;state.energy--;const gain=selected==='thief'?23:20;const gate=state.gates[i];const before=gate.progress;gate.progress=Math.min(100,gate.progress+gain);log((i===0?'东侧':'西侧')+'大门破译：'+before+'% → '+gate.progress+'%。');if(gate.progress>=100)log((i===0?'东侧':'西侧')+'大门已开启！你可以选择立即逃脱。');render()}
 function check(){
 if(state.enemyHp<=0){state.enemyHp=0;finish(true);return}
 if(state.hp<=0){state.hp=0;finish(false)}
 }
 function finish(win,escaped=false){state.over=true;$('resultTitle').textContent=win?'雾散之后':'庄园留住了你';const decoded=state.ciphers.filter(x=>x.progress>=100).length;$('resultText').textContent=win?(escaped?'你成功穿过逃生大门，离开了这座被浓雾吞噬的庄园。':'你击退了监管者，暂时赢得了喘息机会。真正的出口，也许还在更深处。'):'你的脚步停在浓雾里。整理手牌，再试一次吧。';$('overlay').classList.add('show')}
-$('difficulty').addEventListener('change',()=>{const notes={easy:"简单：监管者生命 30，基础攻击 3，大门阶段额外攻击 1，干扰较少。",normal:"普通：监管者生命 40，基础攻击 5，大门阶段额外攻击 2，干扰适中。",hard:"困难：监管者生命 52，基础攻击 7，大门阶段额外攻击 3，干扰频繁且倒退更多。"};$('difficultyNote').textContent=notes[$('difficulty').value]});$('start').addEventListener('click',start);$('heroSkill').addEventListener('click',useSkill);
+$('difficulty').addEventListener('change',()=>{const notes={easy:"简单：监管者生命 30，基础攻击 3，大门阶段额外攻击 1，干扰较少。",normal:"普通：监管者生命 44，基础攻击 5，大门阶段额外攻击 2，干扰适中。",hard:"困难：监管者生命 56，基础攻击 7，大门阶段额外攻击 3，干扰频繁且倒退更多。"};$('difficultyNote').textContent=notes[$('difficulty').value]});$('start').addEventListener('click',start);$('heroSkill').addEventListener('click',useSkill);
 $('endTurn').addEventListener('click',enemyTurn);$('decode').addEventListener('click',decode);$('gate0').addEventListener('click',()=>decodeGate(0));$('gate1').addEventListener('click',()=>decodeGate(1));$('escape').addEventListener('click',()=>{if(state.gates.some(g=>g.progress>=100))finish(true,true)});
 $('redraw').addEventListener('click',()=>{if(state.energy<1||!state.hand.length)return;state.energy--;state.hand=state.hand.slice(1);draw(1);log('你放弃一张手牌，重新寻找机会。');render()});
 $('restart').addEventListener('click',()=>{$('overlay').classList.remove('show');$('game').classList.remove('active');$('setup').classList.remove('hidden')});
