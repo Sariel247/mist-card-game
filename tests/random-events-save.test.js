@@ -9,6 +9,13 @@ const inlineScript=(html.match(/<script>([\s\S]*?)<\/script>/)||[])[1];
 assert(inlineScript,'inline script exists');
 assert.doesNotThrow(()=>new vm.Script(inlineScript),'inline JavaScript parses');
 has('function triggerRandomEvent()','random event function exists');
+has("function weatherShieldBonus(){return state.weather==='rain'?weatherTier():0}",'rain shield bonus only applies when shield is gained');
+has("state.weather==='autumn'||state.weather==='cold'",'autumn and cold first-defense card buffs are handled separately');
+has("case'guard':{state.playerGuardHits=Math.min(4,state.playerGuardHits+2);}",'guard card does not receive an unintended rain shield');
+has("if(overflow)grantWeatherShield(overflow,'逆流急救溢出治疗')",'overflow healing routes shield through weather handling');
+has("grantWeatherShield(2,'稳住阵脚')",'steady card shield routes through weather handling');
+has("grantWeatherShield(3,'先知役鸟守护')",'seer passive shield routes through weather handling');
+
 has('state.round%3===1&&state.eventsTriggered<4','events occur after completed rounds 3, 6, 9 and 12, capped at four');
 for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现','破译干扰'])has(name,'event exists: '+name);
 has("localStorage.setItem(SAVE_KEY,JSON.stringify({state,selected,savedAt:Date.now()}))",'autosave persists game state');
@@ -27,4 +34,4 @@ has("SAVE_KEY+'-records'",'career records are stored separately from active save
 for(const achievement of ['first_win','escape_artist','cipher_master','event_explorer','hard_survivor'])has(achievement,'achievement exists: '+achievement);
 has("state.difficulty.name===difficulties.hard.name",'hard achievement works after JSON restore');
 has("data[mode]",'standard and custom records are kept separately');
-console.log('Random event, save, records and achievement source audit: 30 assertions PASS');
+console.log('Random event, save, records and achievement source audit: 35 assertions PASS');
