@@ -34,4 +34,12 @@ has("SAVE_KEY+'-records'",'career records are stored separately from active save
 for(const achievement of ['first_win','escape_artist','cipher_master','event_explorer','hard_survivor'])has(achievement,'achievement exists: '+achievement);
 has("state.difficulty.name===difficulties.hard.name",'hard achievement works after JSON restore');
 has("data[mode]",'standard and custom records are kept separately');
-console.log('Random event, save, records and achievement source audit: 35 assertions PASS');
+
+has("function useSkill(){if(!state||state.over)return;",'hero skill action safely ignores missing or completed game state');
+has("function enemyTurn(){\\nif(!state||state.over)return;",'turn advance safely ignores missing or completed game state');
+has("function decode(){if(!state||state.over||",'cipher decode safely ignores missing or completed game state');
+has("function decodeGate(i){if(!state||state.over||",'gate decode safely ignores missing or completed game state');
+has("$('escape').addEventListener('click',()=>{if(!state||state.over)return;",'escape action safely ignores missing or completed game state');
+has("$('redraw').addEventListener('click',()=>{if(!state||state.over||",'redraw action safely ignores missing or completed game state');
+
+console.log('Random event, save, records and achievement source audit: 41 assertions PASS');
