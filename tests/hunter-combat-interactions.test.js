@@ -1,0 +1,26 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const has=(snippet,label)=>assert(html.includes(snippet),label);
+has("case'queenMirror':state.hunterDamageBonus+=3;break;","queen bonus");
+has("case'jackFogblade':state.hunterShieldPierce+=3;break;","jack pierce");
+has("if(state.weather==='wind')state.hunterDamageBonus+=weatherTier();","wind bonus");
+has("if(state.weather==='rain'||state.weather==='thunder')return weatherTier();","rain/thunder bonus");
+has("const pierced=Math.min(pierceBudget,state.shield,dmg);","bounded pierce");
+has("const blocked=Math.min(state.shield,remainingDamage);state.shield-=blocked;","shield consumption");
+has("function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;","shared damage reduction");
+has("const reflectWeather=state.weather==='thunder'?weatherTier():0;const dealt=damageHunter(reflected+reflectWeather);","thunder retaliation");
+has("const counterWeather=state.weather==='thunder'?weatherTier():0;const dealt=damageHunter(counter+counterWeather);","thunder mirror");
+has("if(blocked>0&&state.shieldCounterDamage>0)","mirror trigger");
+has("if(state.reflectDamage>0){const insight=state.attackBonus||0;const resonance=state.reflectBonus||0;","retaliation stacking");
+has("if(state.hunterSkipAttack>0){state.hunterSkipAttack--;","trap before one-shot consume");
+function hit({damage,shield,pierce=0}){const pierced=Math.min(pierce,shield,damage);const remaining=damage-pierced;const blocked=Math.min(shield,remaining);return{pierced,blocked,shieldLeft:shield-blocked,hpLoss:pierced+remaining-blocked};}
+assert.deepEqual(hit({damage:8,shield:5,pierce:3}),{pierced:3,blocked:5,shieldLeft:0,hpLoss:3});
+assert.deepEqual(hit({damage:8,shield:2,pierce:3}),{pierced:2,blocked:2,shieldLeft:0,hpLoss:6});
+assert.deepEqual(hit({damage:2,shield:5,pierce:3}),{pierced:2,blocked:0,shieldLeft:5,hpLoss:2});
+assert.deepEqual(hit({damage:4,shield:5}),{pierced:0,blocked:4,shieldLeft:1,hpLoss:0});
+const reduced=(n,barrier)=>barrier?Math.round(n*.7):n;
+assert.equal(reduced(10,true),7);assert.equal(reduced(5,true),4);assert.equal(reduced(3,false),3);
+console.log('Hunter combat interaction audit: 12 source guards + 7 arithmetic assertions PASS');
