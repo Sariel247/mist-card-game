@@ -40,6 +40,41 @@ has('state.eventsTriggered++;','event counter increments once for each selected 
 has('state.lastEvent={name:event.name,desc:event.desc};','latest event is saved for UI and persistence');
 has('function persistGame(){','round changes are persisted through render');
 
+
+const vm=require('node:vm');
+const enemyStart=html.indexOf('function enemyTurn(){');
+const enemyEnd=html.indexOf('\\nfunction decodeGate',enemyStart);
+assert(enemyStart>=0&&enemyEnd>enemyStart,'actual enemyTurn function can be isolated');
+const runtimeState={
+  over:false,round:1,difficulty:{damage:1,roundDamage:0,gateBonus:0,interference:0,gateLoss:0},
+  controlTurns:0,hunterReductionTurns:0,fury:0,gatePhase:false,gates:[{progress:0},{progress:0}],
+  ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),weather:'rain',energy:0,
+  skillPoints:3,hunterSkillPoints:3,pendingDecodeEnergy:1,decodeActions:2,eventsTriggered:0,
+  hp:100,shield:0,hunterSkipAttack:0,playerGuardHits:0,hunterDamageBonus:0,weaken:0,
+  markedWeakenHits:0,markedWeakenAmount:0,hunterShieldPierce:0,doctorCooldown:0,
+  doctorCooldownSetRound:0,weatherHunterFirstAttackRound:0,weatherDefenseUsedRound:0,
+  weatherAttackUsedRound:0,weatherAttackResourceUsedRound:0,weatherDefenseResourceUsedRound:0
+};
+const eventRounds=[];
+const runtime={
+  state:runtimeState,selected:'seer',gainFury(){},chooseHunterSkill(){},weatherHunterDamageBonus(){return 0;},
+  getExtraAttackChance(){return 0;},log(){},check(){},weatherTier(){return runtimeState.gatePhase?2:1;},
+  triggerRandomEvent(){runtimeState.eventsTriggered++;eventRounds.push(runtimeState.round);},
+  draw(){},render(){},damageHunter(){return 0;}
+};
+const runtimeContext=vm.createContext(runtime);
+vm.runInContext('Math.random=()=>0.99;',runtimeContext);
+vm.runInContext(html.slice(enemyStart,enemyEnd),runtimeContext);
+for(let i=0;i<12;i++)vm.runInContext('enemyTurn();',runtimeContext);
+assert.deepEqual(eventRounds,[4,7,10,13],'events occur after completed rounds 3, 6, 9 and 12');
+assert.equal(runtimeState.eventsTriggered,4,'event cap prevents a fifth event');
+assert.equal(runtimeState.round,13,'twelve enemy turns advance to round thirteen');
+assert.equal(runtimeState.energy,49,'rain grants +1 energy each turn and pending decode bonus is consumed once');
+assert.equal(runtimeState.pendingDecodeEnergy,0,'pending decode energy is cleared after one settlement');
+assert.equal(runtimeState.skillPoints,6,'survivor skill points respect the six-point cap');
+assert.equal(runtimeState.hunterSkillPoints,6,'hunter skill points respect the six-point cap');
+assert.equal(runtimeState.decodeActions,0,'decode action counter resets after each turn');
+
 function duration(initial,activeSnapshot){let n=initial;for(let i=0;i<2;i++){if(activeSnapshot&&n>0)n--;}return n}
 assert.equal(duration(2,true),0,'two protected player actions consume two duration counts');
 assert.equal(duration(2,false),2,'newly applied barrier is not consumed on cast turn');
