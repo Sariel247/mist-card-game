@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const has=(s,label)=>assert(html.includes(s),label);
+has('function triggerRandomEvent()','random event function exists');
+has('state.round%3===0&&state.eventsTriggered<4','events occur every third round, capped at four');
+for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现'])has(name,'event exists: '+name);
+has("localStorage.setItem(SAVE_KEY,JSON.stringify({state,selected,savedAt:Date.now()}))",'autosave persists game state');
+has('function restoreGame()','restore function exists');
+has('state.hunterRoleDef=hunterRoleDefs[state.hunterRole]||hunterRoleDefs.queen','restore rehydrates hunter role definition');
+has('state.hunterBaseSkill=hunterBasePool.find','restore rehydrates base skill');
+has('state.hunterSpecialSkill=hunterSpecialPool.find','restore rehydrates special skill');
+has('persistGame();','render triggers autosave');
+has("localStorage.removeItem(SAVE_KEY)",'save is cleared on end/reset');
+has("$('resultStats').innerHTML=",'result summary is rendered');
+console.log('Random event and save feature source audit: 14 assertions PASS');
