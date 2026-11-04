@@ -24,6 +24,22 @@ assert(use.includes('state.hunterSkillCooldowns[skill.id]=state.round+skill.cool
 assert(hero.includes('state.doctorCooldown=2;state.doctorCooldownSetRound=state.round;'),'doctor records cooldown start round');
 assert(enemy.indexOf('const controlWasActive=')<enemy.indexOf('chooseHunterSkill();'),'new control effect not treated as pre-existing at same turn end');
 assert(enemy.indexOf('const reductionWasActive=')<enemy.indexOf('chooseHunterSkill();'),'new barrier effect not treated as pre-existing at same turn end');
+
+has("if(state.round%3===1&&state.eventsTriggered<4)triggerRandomEvent();",'random event check runs after round increment and caps at four');
+has("if(state.weather==='rain'||state.weather==='wind')weatherEnergy=tier;",'rain and wind energy rewards are granted at each new-round boundary');
+has("if(state.weather==='fog'){weatherPlayerSkill=tier;weatherHunterSkill=tier;}",'fog restores both sides skill points at the round boundary');
+has("if(state.weather==='cold')weatherHunterSkill=tier;",'cold restores hunter skill points only');
+has('state.decodeActions=0;','ordinary decode action limit resets for the new round');
+has('state.pendingDecodeEnergy=0;','pending cipher milestone energy is consumed exactly once');
+has('state.weatherAttackUsedRound!==state.round','wind attack bonus is once per round');
+has('state.weatherDefenseUsedRound!==state.round','autumn/cold first defense bonus is once per round');
+has('state.weatherAttackResourceUsedRound!==state.round','thunder attack resource bonus is once per round');
+has('state.weatherDefenseResourceUsedRound!==state.round','autumn defense resource bonus is once per round');
+has('if(state.weather===\'cold\')weatherHunterSkill=tier;','cold weather does not grant survivor skill points');
+has('state.eventsTriggered++;','event counter increments once for each selected event');
+has('state.lastEvent={name:event.name,desc:event.desc};','latest event is saved for UI and persistence');
+has('function persistGame(){','round changes are persisted through render');
+
 function duration(initial,activeSnapshot){let n=initial;for(let i=0;i<2;i++){if(activeSnapshot&&n>0)n--;}return n}
 assert.equal(duration(2,true),0,'two protected player actions consume two duration counts');
 assert.equal(duration(2,false),2,'newly applied barrier is not consumed on cast turn');
