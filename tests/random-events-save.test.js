@@ -2,8 +2,12 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const has=(s,label)=>assert(html.includes(s),label);
+const inlineScript=(html.match(/<script>([\\s\\S]*?)<\\/script>/)||[])[1];
+assert(inlineScript,'inline script exists');
+assert.doesNotThrow(()=>new vm.Script(inlineScript),'inline JavaScript parses');
 has('function triggerRandomEvent()','random event function exists');
 has('state.round%3===1&&state.eventsTriggered<4','events occur after completed rounds 3, 6, 9 and 12, capped at four');
 for(const name of ['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现'])has(name,'event exists: '+name);
@@ -23,4 +27,4 @@ has("SAVE_KEY+'-records'",'career records are stored separately from active save
 for(const achievement of ['first_win','escape_artist','cipher_master','event_explorer','hard_survivor'])has(achievement,'achievement exists: '+achievement);
 has("state.difficulty.name===difficulties.hard.name",'hard achievement works after JSON restore');
 has("data[mode]",'standard and custom records are kept separately');
-console.log('Random event, save, records and achievement source audit: 27 assertions PASS');
+console.log('Random event, save, records and achievement source audit: 29 assertions PASS');
