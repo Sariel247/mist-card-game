@@ -23,7 +23,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.5.0</div></header>
+<header class="top"><div class="brand">迷雾牌局<small>MIST CARD GAME</small></div><div class="version">PROTOTYPE · V0.6.0</div></header>
 <section class="hero"><div class="eyebrow">THE FOG IS NEVER EMPTY</div><h1>庄园的最后一局</h1><div class="subtitle">每一张牌，都是一次选择。每一次选择，都留下代价。</div></section>
 <section class="panel setup" id="setup">
 <h2 class="section-title">选择你的求生者</h2>
@@ -66,7 +66,10 @@ const deck=[
 {id:'ambush',name:'声东击西',symbol:'♧',cost:2,desc:'造成 10 点伤害，但自身承受 2 点反噬。',type:'risk',value:10},
 {id:'insight',name:'密码推演',symbol:'⌘',cost:1,desc:'削弱监管者警戒，本回合攻击降低。',type:'weaken',value:3},
 {id:'resolve',name:'绝境意志',symbol:'✧',cost:2,desc:'恢复 4 点生命并获得 3 点护盾。',type:'resolve',value:4},
-{id:'counter',name:'精准反制',symbol:'◈',cost:2,desc:'对监管者造成 8 点伤害。',type:'attack',value:8}
+{id:'counter',name:'精准反制',symbol:'◈',cost:2,desc:'对监管者造成 8 点伤害。',type:'attack',value:8},
+{id:'calibrate',name:'快速校准',symbol:'⌘',cost:1,desc:'立即推进当前密码机 30% 进度。',type:'decode',value:30},
+{id:'gatekit',name:'大门工具箱',symbol:'⚿',cost:1,desc:'通电后使用：推进当前大门 30% 进度。',type:'gate',value:30},
+{id:'smoke',name:'烟幕掩护',symbol:'☁',cost:1,desc:'获得 3 点护盾，并削弱监管者下一次攻击 2 点。',type:'tactical',value:3}
 ];
 const difficulties={easy:{name:"简单",enemyHp:30,damage:3,roundDamage:0.5,gateBonus:1,interference:0.2,gateLoss:8},normal:{name:"普通",enemyHp:40,damage:5,roundDamage:0.75,gateBonus:2,interference:0.35,gateLoss:12},hard:{name:"困难",enemyHp:52,damage:7,roundDamage:1,gateBonus:3,interference:0.5,gateLoss:18}};
 let selected='seer',state=null,serial=0;
@@ -83,7 +86,7 @@ function render(){
 $('playerHp').textContent=state.hp;$('enemyHp').textContent=state.enemyHp;$('energy').textContent=state.energy;$('shield').textContent=state.shield;$('enemyFear').textContent=state.fear;
 $('playerBar').style.width=Math.max(0,state.hp/state.hero.hp*100)+'%';$('enemyBar').style.width=Math.max(0,state.enemyHp/state.difficulty.enemyHp*100)+'%';const skillNames={seer:'预兆：获得 3 点护盾',doctor:'疗愈：恢复 5 点生命',thief:'灵巧：获得 1 点能量'};$('heroSkill').textContent=skillNames[selected]+(state.skillUsed?'（本回合已使用）':'');$('heroSkill').disabled=state.over||state.skillUsed;$('round').textContent='第 '+state.round+' 回合 · 你的行动';
 $('hand').innerHTML='';
-state.hand.forEach((card,i)=>{const b=document.createElement('button');b.className='card';b.disabled=state.over||state.energy<card.cost;b.innerHTML='<span class="cost">'+card.cost+'</span><div class="symbol">'+card.symbol+'</div><strong>'+card.name+'</strong><p>'+card.desc+'</p>';b.addEventListener('click',()=>play(i));$('hand').append(b)});
+state.hand.forEach((card,i)=>{const b=document.createElement('button');b.className='card';b.disabled=state.over||state.energy<card.cost||(card.type==='gate'&&!state.gatePhase)||(card.type==='decode'&&!state.ciphers.some(x=>x.progress<100));b.innerHTML='<span class="cost">'+card.cost+'</span><div class="symbol">'+card.symbol+'</div><strong>'+card.name+'</strong><p>'+card.desc+'</p>';b.addEventListener('click',()=>play(i));$('hand').append(b)});
 const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary').textContent=completed+' / 5 已完成';$('gateArea').classList.toggle('active',state.gatePhase);state.gates.forEach((g,i)=>{$('gatePct'+i).textContent=g.progress>=100?'已开启':g.progress+'%';$('gateBar'+i).style.width=g.progress+'%';$('gateCard'+i).classList.toggle('open',g.progress>=100);$('gate'+i).disabled=!state.gatePhase||state.over||state.energy<1||g.progress>=100});const opened=state.gates.filter(g=>g.progress>=100).length;$('gateSummary').textContent=opened+' / 2 扇大门已开启';$('gateHint').textContent=state.gatePhase?'监管者会持续施压，破译大门时请留意生命与能量。':'五台密码机全部完成后，选择一扇大门继续破译。';$('escape').classList.toggle('ready',opened>0);$('cipherGrid').innerHTML=state.ciphers.map(x=>'<div class="cipher '+(x.progress>=100?'done':'')+'"><div class="cipher-name">密码机 '+String(x.id).padStart(2,'0')+'</div><div class="cipher-track"><span style="width:'+x.progress+'%"></span></div><div class="cipher-percent">'+(x.progress>=100?'✓ 完成':x.progress+'%')+'</div></div>').join('');const target=state.ciphers.find(x=>x.progress<100);$('cipherHint').textContent=target?'当前目标：密码机 '+String(target.id).padStart(2,'0')+'。每次破译推进 35%'+(selected==='thief'?'（慈善家额外 +5%）':'')+'。':'五台密码机全部破译完成！';$('decode').disabled=state.over||state.energy<1||!target;$('endTurn').disabled=state.over;$('redraw').disabled=state.over||state.energy<1||!state.hand.length;
 }
 function useSkill(){if(state.over||state.skillUsed)return;state.skillUsed=true;if(selected==='seer'){state.shield+=3;log('先知发动「预兆」：获得 3 点护盾。')}else if(selected==='doctor'){const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);log('医生发动「疗愈」：恢复 '+(state.hp-before)+' 点生命。')}else{const before=state.energy;state.energy=Math.min(5,state.energy+1);log('慈善家发动「灵巧」：获得 '+(state.energy-before)+' 点能量。')}render()}
@@ -96,11 +99,15 @@ case'heal':{const v=state.hero.heal===6?10:c.value;const old=state.hp;state.hp=M
 case'shield':state.shield+=c.value;log('你获得 '+c.value+' 点护盾。');break;
 case'risk':state.enemyHp-=c.value;state.hp-=2;log('声东击西奏效，造成 '+c.value+' 点伤害，自身受到 2 点反噬。');break;
 case'weaken':state.weaken=c.value;log('你看穿了监管者的动作，削弱其下一次攻击。');break;
+case'decode':{const target=state.ciphers.find(x=>x.progress<100);if(target){const before=target.progress;target.progress=Math.min(100,target.progress+c.value+(selected==='thief'?5:0));log('快速校准：密码机 '+String(target.id).padStart(2,'0')+' 进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');if(state.ciphers.every(x=>x.progress>=100)){state.gatePhase=true;log('五台密码机全部完成！东、西两侧逃生大门已通电。监管者开始全力追击！')}}break;}
+case'gate':{const target=state.gates.find(x=>x.progress<100);if(target){const before=target.progress;target.progress=Math.min(100,target.progress+c.value);log('大门工具箱：当前大门进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('一扇逃生大门已开启！')}break;}
+case'tactical':state.shield+=c.value;state.weaken=Math.max(state.weaken,2);log('烟幕掩护：获得 3 点护盾，监管者下一次攻击降低 2 点。');break;
 case'resolve':{const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+c.value);state.shield+=3;log('意志坚定：恢复 '+(state.hp-old)+' 点生命并获得 3 点护盾。');break}
 }
 check();render();
 }
-function decode(){if(state.over||state.energy<1)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;const gain=selected==='thief'?40:35;const before=target.progress;target.progress=Math.min(100,target.progress+gain);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');if(state.ciphers.every(x=>x.progress>=100)){state.gatePhase=true;log('五台密码机全部完成！东、西两侧逃生大门已通电。监管者开始全力追击！')}render()}
+function activateGatePhase(){if(state.ciphers.every(x=>x.progress>=100)&&!state.gatePhase){state.gatePhase=true;log('五台密码机全部完成！东、西两侧逃生大门已通电。监管者开始全力追击！')}}
+function decode(){if(state.over||state.energy<1)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;const gain=selected==='thief'?40:35;const before=target.progress;target.progress=Math.min(100,target.progress+gain);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();render()}
 function enemyTurn(){
 if(state.over)return;
 const cfg=state.difficulty;const dmg=Math.max(1,cfg.damage+Math.floor(state.round*cfg.roundDamage/4)+(state.gatePhase?cfg.gateBonus:0)-state.weaken);state.weaken=0;if(state.gatePhase){const unfinished=state.gates.map((g,i)=>({g,i})).filter(x=>x.g.progress>0&&x.g.progress<100);if(unfinished.length&&Math.random()<cfg.interference){const target=unfinished[Math.floor(Math.random()*unfinished.length)];const lost=Math.min(cfg.gateLoss,target.g.progress);target.g.progress-=lost;log('监管者干扰了'+(target.i===0?'东侧':'西侧')+'大门，破译进度倒退 '+lost+'%。')}}
