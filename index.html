@@ -150,12 +150,12 @@ function trackCipherFury(before,after){const total=state.ciphers.reduce((sum,c)=
 function getExtraAttackChance(){const roundBonus=state.round<=2?0:state.round<=4?10:state.round<=6?20:30;const completed=state.ciphers.filter(c=>c.progress>=100).length;return Math.min(60,roundBonus+completed*5)}
 const weatherDefs={
 sun:{name:'☀️ 晴天',phase:'平静天气',base:'没有天气增益或减益。双方按照常规规则进行对局。',gate:'晴天在大门阶段也不会强化。',weight:60},
-rain:{name:'🌧️ 暴雨',phase:'防御与压迫',base:'暴雨将强化防御收益，同时增加监管者的攻击压力。',gate:'大门阶段：双方的防御与攻击天气效果同步增强。',weight:40},
-fog:{name:'🌫️ 浓雾',phase:'控制与干扰',base:'浓雾将强化控制与行动干扰，双方都需要谨慎安排技能时机。',gate:'大门阶段：控制与干扰效果进入强化状态。',weight:40},
-thunder:{name:'⚡ 雷暴',phase:'高爆发',base:'雷暴将提高双方的爆发伤害，攻击与反击更具威胁。',gate:'大门阶段：双方的爆发效果进一步增强。',weight:40},
-autumn:{name:'🍂 落叶',phase:'持久作战',base:'落叶天气偏向持久战，围绕防御、命中与资源积累展开。',gate:'大门阶段：持久作战相关效果进一步增强。',weight:40},
-cold:{name:'❄️ 寒潮',phase:'节奏控制',base:'寒潮将影响破译节奏与攻击节奏，行动顺序变得更加重要。',gate:'大门阶段：天气效果转向最后冲刺与追击压迫。',weight:40},
-wind:{name:'🌬️ 逆风',phase:'战术连携',base:'逆风鼓励攻击、破译与技能之间的连续配合。',gate:'大门阶段：连携收益与追击压力同步增强。',weight:40}
+rain:{name:'🌧️ 暴雨',phase:'防御与压迫',base:'求生者获得护盾时额外 +1；监管者每次攻击额外 +1 伤害。',gate:'强化：护盾额外 +2，监管者每次攻击额外 +2 伤害。',weight:40},
+fog:{name:'🌫️ 浓雾',phase:'控制与干扰',base:'求生者使用迷雾束缚时，额外增加 1 次陷阱；监管者禁锢领域正常持续 1 回合。',gate:'强化：迷雾束缚额外陷阱仍生效；监管者禁锢领域延长至 2 回合。',weight:40},
+thunder:{name:'⚡ 雷暴',phase:'高爆发',base:'求生者攻击牌 +1 伤害；监管者每次攻击 +1 伤害。',gate:'强化：求生者攻击牌与监管者攻击各额外 +2 伤害。',weight:40},
+autumn:{name:'🍂 落叶',phase:'持久作战',base:'求生者每回合首次防御卡额外获得 1 护盾；监管者每次命中增加 1 点愤怒。',gate:'强化：首次防御额外 +2 护盾；监管者每次命中增加 2 点愤怒。',weight:40},
+cold:{name:'❄️ 寒潮',phase:'节奏控制',base:'求生者密码机破译 -5%；每回合首次防御额外 +1 护盾；监管者首次攻击 -1 伤害。',gate:'大门阶段：大门破译 +5%；监管者首次攻击改为 +2 伤害。',weight:40},
+wind:{name:'🌬️ 逆风',phase:'战术连携',base:'求生者每回合首次攻击牌 +1 伤害；监管者每次释放主动技能后，下一次攻击 +1。',gate:'强化：上述连携加成提高至 +2。',weight:40}
 };
 function rollWeather(){const total=Object.values(weatherDefs).reduce((n,w)=>n+w.weight,0);let r=Math.random()*total;for(const [id,w] of Object.entries(weatherDefs)){r-=w.weight;if(r<0)return id}return 'sun'}
 
@@ -215,7 +215,7 @@ state.hand.forEach((card,i)=>{const b=document.createElement('button');b.classNa
 const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary').textContent=completed+' / 5 已完成';$('gateArea').classList.toggle('active',state.gatePhase);state.gates.forEach((g,i)=>{$('gatePct'+i).textContent=g.progress>=100?'已开启':g.progress+'%';$('gateBar'+i).style.width=g.progress+'%';$('gateCard'+i).classList.toggle('open',g.progress>=100);$('gate'+i).disabled=!state.gatePhase||state.over||state.controlTurns>0||state.energy<1||g.progress>=100});const opened=state.gates.filter(g=>g.progress>=100).length;$('gateSummary').textContent=opened+' / 2 扇大门已开启';$('gateHint').textContent=state.gatePhase?'监管者会持续施压，破译大门时请留意生命与能量。':'五台密码机全部完成后，选择一扇大门继续破译。';$('escape').classList.toggle('ready',opened>0);$('cipherGrid').innerHTML=state.ciphers.map(x=>'<div class="cipher '+(x.progress>=100?'done':'')+'"><div class="cipher-name">密码机 '+String(x.id).padStart(2,'0')+'</div><div class="cipher-track"><span style="width:'+x.progress+'%"></span></div><div class="cipher-percent">'+(x.progress>=100?'✓ 完成':x.progress+'%')+'</div></div>').join('');const target=state.ciphers.find(x=>x.progress<100);$('cipherHint').textContent=target?'当前目标：密码机 '+String(target.id).padStart(2,'0')+'。每次破译推进 20%'+(selected==='thief'?'（慈善家额外 +5%）':'')+'。本回合已破译 '+state.decodeActions+'/3 次。':'五台密码机全部破译完成！本回合已破译 '+state.decodeActions+'/3 次。';$('decode').disabled=state.over||state.controlTurns>0||state.energy<1||!target||state.decodeActions>=3;$('endTurn').disabled=state.over;$('redraw').disabled=state.over||state.controlTurns>0||state.energy<1||!state.hand.length;
 }
 function useSkill(){if(state.over||selected!=='doctor'||state.doctorCooldown>0||state.hp>=state.hero.hp)return;const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);state.doctorCooldown=2;state.doctorCooldownSetRound=state.round;log('医生发动「医药专精」：恢复 '+(state.hp-before)+' 点生命，接下来 2 个完整回合无法再次使用。');render()}
-function damageHunter(amount){if(state.weather==='thunder'&&state.gatePhase)amount+=2;const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 30%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
+function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 30%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
 function chooseHunterSkill(){if(state.hunterSkillUsedRound===state.round)return;const skills=[state.hunterRoleSkill,state.hunterBaseSkill,state.hunterSpecialSkill].filter(hunterSkillReady);if(!skills.length)return;const scored=skills.map(skill=>({skill,score:skill.score?skill.score():5})).sort((a,b)=>b.score-a.score);if(scored[0].score>=5)useHunterSkill(scored[0].skill.id);}
 function play(i){
 const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over||(c.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100))))return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
