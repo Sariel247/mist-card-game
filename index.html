@@ -144,7 +144,7 @@ $('gameMode').addEventListener('change',()=>{$('hunterChoiceBox').style.display=
 document.querySelectorAll('.character').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.character').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selected=b.dataset.id}));
 function shuffle(a){const copy=[...a];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
 function log(msg){const p=document.createElement('p');p.textContent=msg;$('log').prepend(p)}
-function draw(n=1){for(let i=0;i<n;i++){if(!state.deck.length)state.deck=shuffle(deck);state.hand.push(state.deck.pop())}}
+function draw(n=1){for(let i=0;i<n;i++){if(!state.deck.length)state.deck=shuffle([...deck,...deck]);state.hand.push(state.deck.pop())}}
 function gainFury(amount,reason){state.fury+=amount;log('监管者愤怒值 +'+amount+'（'+reason+'），当前 '+state.fury+' 点。')}
 function weatherTier(){return state.gatePhase?2:1}
 function weatherShieldBonus(){return state.weather==='rain'?weatherTier():0}
