@@ -20,7 +20,7 @@ jobs:
           node-version: 22
       - name: Check JavaScript syntax
         run: |
-          sed -n '/<script>/,/<\\/script>/p' index.html | sed '1d;$d' > /tmp/mist-card-game.js
+          python3 -c "from pathlib import Path; s=Path('index.html').read_text(); print(s.split('<script>',1)[1].split('</script>',1)[0])" > /tmp/mist-card-game.js
           node --check /tmp/mist-card-game.js
           for file in tests/*.test.js; do node --check "$file"; done
       - name: Run regression tests
