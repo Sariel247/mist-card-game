@@ -1,0 +1,102 @@
+name: Localize character portraits
+
+on:
+  push:
+    branches:
+      - assets-localization
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: assets-localization
+          fetch-depth: 0
+      - name: Download and localize all character portraits
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          import subprocess
+
+          assets = {
+              "seer.png": "https://patchwiki.biligame.com/images/dwrg/thumb/9/9e/m5jgq75qkxrm01j923tz6izqignh1hp.png/75px-%E5%85%88%E7%9F%A5%E5%A4%B4%E5%83%8F2.png",
+              "doctor.png": "https://patchwiki.biligame.com/images/dwrg/thumb/f/f4/qidge0im3lrywdad9qao0o8omcvgyob.png/75px-%E5%8C%BB%E7%94%9F%E5%A4%B4%E5%83%8F2.png",
+              "thief.png": "https://patchwiki.biligame.com/images/dwrg/thumb/b/b3/s0cu5s92kmpic4lpw3sivwh90hraow1.png/75px-%E2%80%9C%E6%85%88%E5%96%84%E5%AE%B6%E2%80%9D%E5%A4%B4%E5%83%8F2.png",
+              "mercenary.png": "https://patchwiki.biligame.com/images/dwrg/thumb/3/3d/5pykv55eaqmivy2n04vf4f8u9jsk735.png/75px-%E4%BD%A3%E5%85%B5%E5%A4%B4%E5%83%8F2.png",
+              "mechanic.png": "https://patchwiki.biligame.com/images/dwrg/thumb/5/54/mrxj1vhcv3603tz8wd7i552n8jgvc3y.png/75px-%E6%9C%BA%E6%A2%B0%E5%B8%88%E5%A4%B4%E5%83%8F2.png",
+              "perfumer.png": "https://patchwiki.biligame.com/images/dwrg/thumb/9/90/kf27hfduxre6zsfmd1lmvaqqgvk6qft.png/75px-%E8%B0%83%E9%A6%99%E5%B8%88%E5%A4%B4%E5%83%8F2.png",
+              "queen.png": "https://patchwiki.biligame.com/images/dwrg/thumb/f/f9/n5qg4j48e1c80h32lygjsbz4n1engng.png/75px-%E7%BA%A2%E5%A4%AB%E4%BA%BA%E5%A4%B4%E5%83%8F2.png",
+              "sculptor.png": "https://patchwiki.biligame.com/images/dwrg/thumb/4/40/coqmq021i258qjtv2ngwq5hla21fmei.png/75px-%E9%9B%95%E5%88%BB%E5%AE%B6%E5%A4%B4%E5%83%8F2.png",
+              "jack.png": "https://patchwiki.biligame.com/images/dwrg/thumb/e/ec/lcfr2pihvh9fu954tjt7as4cl18kqzz.png/75px-%E2%80%9C%E6%9D%B0%E5%85%8B%E2%80%9D%E5%A4%B4%E5%83%8F2.png",
+          }
+          out = Path("assets/characters")
+          out.mkdir(parents=True, exist_ok=True)
+          for name, url in assets.items():
+              req = Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; MistCardGame/0.8.2)"})
+              with urlopen(req, timeout=30) as response:
+                  data = response.read()
+                  content_type = response.headers.get("Content-Type", "")
+              if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+                  raise RuntimeError(f"{name}: response is not a PNG (Content-Type={content_type}, bytes={len(data)})")
+              (out / name).write_bytes(data)
+              print(f"Downloaded {name}: {len(data)} bytes")
+
+          index = Path("index.html")
+          html = index.read_text(encoding="utf-8")
+          for name, url in assets.items():
+              if url not in html:
+                  raise RuntimeError(f"Expected source URL not found in index.html: {name}")
+              html = html.replace(url, f"assets/characters/{name}")
+          html = html.replace("V0.8.1 · 角色展示修复", "V0.8.2 · 角色图片本地化")
+          index.write_text(html, encoding="utf-8")
+
+          readme = Path("README.md")
+          doc = readme.read_text(encoding="utf-8")
+          doc = doc.replace("## 当前版本：V0.8.1（角色展示修复）", "## 当前版本：V0.8.2（角色图片本地化）")
+          doc = doc.replace("├── index.html\n└── README.md",
+                            "├── assets/characters/  # 六名求生者与三名监管者头像\n├── tests/              # 自动回归测试\n├── index.html\n└── README.md")
+          doc += """
+
+          ### V0.8.2 角色头像本地化
+
+          - 六名求生者与三名监管者头像已保存到仓库 assets/characters/，页面运行时不再请求 BWIKI 头像外链。
+          - 头像保留 75×75 缩略图规格，适配现有角色选择与监管者信息面板。
+          - 图片来源：BWIKI《第五人格》相关角色头像页面资源。图片版权及具体授权以原页面标注为准；本项目为个人非商业同人作品。
+          - 新增角色头像资源回归测试，检查九张图片存在、PNG 文件头正确，且角色头像引用均为仓库相对路径。
+          """
+          readme.write_text(doc, encoding="utf-8")
+
+          test = r'''const fs = require('fs');
+          const path = require('path');
+          const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+          const names = ['seer', 'doctor', 'thief', 'mercenary', 'mechanic', 'perfumer', 'queen', 'sculptor', 'jack'];
+          for (const name of names) {
+            const asset = path.join(__dirname, '..', 'assets', 'characters', name + '.png');
+            if (!fs.existsSync(asset)) throw new Error('Missing character portrait: ' + name);
+            const bytes = fs.readFileSync(asset);
+            if (bytes.length < 16 || bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') {
+              throw new Error('Invalid PNG portrait: ' + name);
+            }
+            if (!html.includes('assets/characters/' + name + '.png')) {
+              throw new Error('index.html does not reference local portrait: ' + name);
+            }
+          }
+          if (/https:\/\/patchwiki\.biligame\.com\/images\/dwrg/.test(html)) {
+            throw new Error('Remote BWIKI portrait URL remains in index.html');
+          }
+          console.log('Character portrait assets: 9 local PNGs verified.');
+          '''
+          Path("tests/character-assets.test.js").write_text(test, encoding="utf-8")
+
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", "assets/characters", "index.html", "README.md", "tests/character-assets.test.js"], check=True)
+          subprocess.run(["git", "commit", "-m", "feat: localize all character portraits"], check=True)
+          subprocess.run(["git", "push", "origin", "assets-localization"], check=True)
+          PY
