@@ -179,7 +179,7 @@ const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary
 function useSkill(){if(state.over||selected!=='doctor'||state.doctorCooldown>0||state.hp>=state.hero.hp)return;const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);state.doctorCooldown=2;state.doctorCooldownSetRound=state.round;log('医生发动「医药专精」：恢复 '+(state.hp-before)+' 点生命，接下来 2 个完整回合无法再次使用。');render()}
 function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 30%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
 function chooseHunterSkill(){if(state.hunterSkillUsedRound===state.round)return;const skills=[state.hunterRoleSkill,state.hunterBaseSkill,state.hunterSpecialSkill].filter(hunterSkillReady);if(!skills.length)return;const scored=skills.map(skill=>({skill,score:skill.score?skill.score():5})).sort((a,b)=>b.score-a.score);if(scored[0].score>=5)useHunterSkill(scored[0].skill.id);}
-function play(function play(i){
+function play(i){
 const c=state.hand[i];if(state.controlTurns>0||!c||state.energy<c.cost||state.skillPoints<c.skillCost||state.over||(c.type==='gate'&&(!state.gatePhase||state.gates.every(g=>g.progress>=100))))return;state.energy-=c.cost;state.skillPoints-=c.skillCost;state.hand.splice(i,1);
 switch(c.type){
 case'attack':{const insight=state.attackBonus||0;state.attackBonus=0;const mark=state.markedAttackHits>0?state.markedAttackBonus:0;if(state.markedAttackHits>0){state.markedAttackHits--;if(state.markedAttackHits===0)state.markedAttackBonus=0;}const bonus=insight+mark;const dealt=damageHunter(c.value+bonus);log(c.name+'：造成 '+dealt+' 点伤害'+(bonus?'（组合加成 +'+bonus+'）':'')+'。');break;}
