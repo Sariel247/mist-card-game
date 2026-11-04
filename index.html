@@ -122,12 +122,12 @@ case'focus':state.energy+=c.value;draw(1);log('冷静观察：获得 '+c.value+'
 case'heal':{const v=selected==='doctor'?12:c.value;const old=state.hp;state.hp=Math.min(state.hero.hp,state.hp+v);log('治疗恢复 '+(state.hp-old)+' 点生命。');break}
 case'shield':state.shield+=c.value;log('你获得 '+c.value+' 点护盾。');break;
 case'risk':{const insight=state.attackBonus||0;state.attackBonus=0;const mark=state.markedAttackHits>0?state.markedAttackBonus:0;if(state.markedAttackHits>0){state.markedAttackHits--;if(state.markedAttackHits===0)state.markedAttackBonus=0;}const bonus=insight+mark;const dealt=damageHunter(c.value+bonus);state.hp-=2;log('声东击西奏效，造成 '+dealt+' 点伤害'+(bonus?'（组合加成 +'+bonus+'）':'')+'，自身受到 2 点反噬。');break;}
-case'weaken':state.weaken=c.value;log('你看穿了监管者的动作，削弱其下一次攻击。');break;
+case'weaken':state.weaken+=c.value;log('你看穿了监管者的动作，下一次实际攻击累计降低 '+state.weaken+' 点伤害。');break;
 case'decode':{const target=state.ciphers.find(x=>x.progress<100);if(target){const before=target.progress;const combo=state.decodeBonus||0;state.decodeBonus=0;target.progress=Math.min(100,target.progress+c.value+combo+(selected==='thief'?5:0));trackCipherFury(before,target.progress);log(c.name+'：密码机 '+String(target.id).padStart(2,'0')+' 进度 '+before+'% → '+target.progress+'%。'+(combo?'（校准共鸣 +'+combo+'%）':''));if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase()}break;}
 case'gate':{const target=state.gates.find(x=>x.progress<100);if(target){const before=target.progress;target.progress=Math.min(100,target.progress+c.value);log('大门工具箱：当前大门进度 '+before+'% → '+target.progress+'%。');if(target.progress>=100)log('一扇逃生大门已开启！')}break;}
-case'tactical':state.shield+=c.value;state.weaken=Math.max(state.weaken,2);log('烟幕掩护：获得 3 点护盾，监管者下一次攻击降低 2 点。');break;
-case'control':state.hunterSkipAttack=1;log('迷雾束缚：陷阱已布置，监管者下一次攻击将落空。');break;
-case'guard':state.playerGuardHits=2;log('坚韧意志：接下来 2 次实际命中的监管者攻击造成的伤害降低 30%。');break;
+case'tactical':state.shield+=c.value;state.weaken+=2;log('烟幕掩护：获得 3 点护盾，下一次实际攻击累计降低 '+state.weaken+' 点伤害。');break;
+case'control':state.hunterSkipAttack=Math.min(2,state.hunterSkipAttack+1);log('迷雾束缚：陷阱已布置，累计 '+state.hunterSkipAttack+' 次攻击将落空。');break;
+case'guard':state.playerGuardHits=Math.min(4,state.playerGuardHits+2);log('坚韧意志：接下来 '+state.playerGuardHits+' 次实际命中的监管者攻击造成的伤害降低 30%。');break;
 case'surge':state.attackBonus+=c.value;log('破绽洞察：下一张攻击牌额外造成 '+c.value+' 点伤害。');break;
 case'thorns':state.shield+=c.value;state.reflectDamage=Math.min(8,state.reflectDamage+c.value);log('以守为攻：获得 4 点护盾，反击储备提升至 '+state.reflectDamage+' 点（上限 8）。');break;
 case'mark':state.markedAttackHits=Math.max(state.markedAttackHits,2);state.markedAttackBonus+=c.value;log('猎痕追击：接下来 '+state.markedAttackHits+' 张攻击牌各获得 +'+state.markedAttackBonus+' 点伤害。');break;
@@ -158,7 +158,7 @@ if(furyTriggered){state.fury-=6;log('监管者愤怒值达到阈值，爆发追�
 const totalAttacks=1+(chanceTriggered?1:0)+(furyTriggered?1:0);
 if(totalAttacks>1)log('监管者本回合将发动 '+totalAttacks+' 次攻击。');
 for(let attackIndex=0;attackIndex<totalAttacks;attackIndex++){
-if(attackIndex===0&&state.hunterSkipAttack>0){state.hunterSkipAttack--;log('监管者踏入你布下的迷雾陷阱，首段攻击被完全打断！');continue;}
+if(state.hunterSkipAttack>0){state.hunterSkipAttack--;log('监管者踏入你布下的迷雾陷阱，第 '+(attackIndex+1)+' 段攻击被完全打断！剩余陷阱 '+state.hunterSkipAttack+' 次。');continue;}
 let rawDamage=baseDmg;if(state.hunterDamageBonus>0){rawDamage+=state.hunterDamageBonus;state.hunterDamageBonus=0;}if(state.weaken>0){rawDamage=Math.max(1,rawDamage-state.weaken);state.weaken=0;}if(state.markedWeakenHits>0){rawDamage=Math.max(1,rawDamage-state.markedWeakenAmount);state.markedWeakenHits--;if(state.markedWeakenHits===0)state.markedWeakenAmount=0;}
 const guarded=state.playerGuardHits>0;const dmg=guarded?Math.max(1,Math.round(rawDamage*0.7)):rawDamage;
 if(guarded){log('坚韧意志生效：监管者攻击由 '+rawDamage+' 降至 '+dmg+' 点。');state.playerGuardHits--;}
