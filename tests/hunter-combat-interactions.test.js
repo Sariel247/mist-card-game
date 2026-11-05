@@ -27,7 +27,7 @@ assert.deepEqual(hit({damage:8,shield:2,pierce:3}),{pierced:2,blocked:2,shieldLe
 assert.deepEqual(hit({damage:2,shield:5,pierce:3}),{pierced:2,blocked:0,shieldLeft:5,hpLoss:2});
 assert.deepEqual(hit({damage:4,shield:5}),{pierced:0,blocked:4,shieldLeft:1,hpLoss:0});
 const reduced=(n,barrier)=>barrier?Math.round(n*.75):n;
-assert.equal(reduced(10,true),7);assert.equal(reduced(5,true),4);assert.equal(reduced(3,false),3);
+assert.equal(reduced(10,true),8);assert.equal(reduced(5,true),4);assert.equal(reduced(3,false),3);
 
 function extractFunction(name){
  const start=script.indexOf('function '+name+'(');assert(start>=0,'live function exists: '+name);
