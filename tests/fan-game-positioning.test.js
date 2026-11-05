@@ -17,6 +17,9 @@ assert.match(html, /LucaMechanics\.createLink/);
 assert.match(html, /applyLucaCipherProgress/);
 assert.match(html, /囚徒释放「强电流」/);
 assert.match(html, /hunterNextAttackReduction/);
+assert.match(html, /id="lucaPanel"/);
+assert.match(html, /线路共振/);
+assert.match(html, /本回合传导/);
 assert.match(design, /强电流/);
 assert.match(design, /同步传输的进度不再次触发传输/);
 

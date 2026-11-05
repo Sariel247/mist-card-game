@@ -21,11 +21,17 @@
   }
   function reconnect(link, items, gateMode = false) {
     const next = createLink(items, gateMode);
-    if (!next) return null;
     if (link) {
-      next.charge = link.charge;
-      next.chargedRound = link.chargedRound;
-      next.skillUsedRound = link.skillUsedRound;
+      const saved = {
+        charge: link.charge || 0,
+        chargedRound: link.chargedRound || 0,
+        skillUsedRound: link.skillUsedRound || 0
+      };
+      if (!next) return {
+        a: null, b: null, gateMode, dormant: true,
+        transferredThisRound: 0, ...saved, reconnectPending: false
+      };
+      Object.assign(next, saved);
     }
     return next;
   }
