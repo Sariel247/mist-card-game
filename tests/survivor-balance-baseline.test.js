@@ -60,9 +60,7 @@ function runDecode(selected){
  const source=extract('function useSkill(){','\nfunction damageHunter');
  assert.match(source,/state\.mechanicUses--/);
  assert.match(source,/const gain=Math\.max\(0,20-statuePenalty-coldPenalty\)/);
- const mechanicBranch=source.slice(source.indexOf("else if(selected==='mechanic')"),source.indexOf('}render()'));
- assert(mechanicBranch.length>0,'mechanic branch is present');
- assert.doesNotMatch(mechanicBranch,/state\.energy|state\.decodeActions/,'puppet remains independent of energy and ordinary decode-action cap');
+ assert.doesNotMatch(source,/state\.energy|state\.decodeActions/,'puppet remains independent of energy and ordinary decode-action cap');
  assert.match(source,/activateGatePhase\(\)/);
 }
 console.log('Survivor balance baseline: ordinary decode, Thief bonus, Luca transfer and Mechanic skill wiring PASS');
