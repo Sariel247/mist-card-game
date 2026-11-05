@@ -21,3 +21,32 @@ has("if(actual>0&&selected==='perfumer'&&state.perfumerArmed)",'perfumer rewind 
 has('const furyTriggered=state.fury>=6;','fury threshold is sampled before attack sequence');
 assert(pos('const furyTriggered=state.fury>=6;')<pos('for(let attackIndex=0;attackIndex<totalAttacks;attackIndex++)'),'fury trigger is determined before attack loop');
 console.log('Hunter attack sequence audit: 10 source-order assertions PASS');
+
+const vm=require('node:vm');
+const enemyRuntime={
+ state:{
+  over:false,round:1,difficulty:{damage:6,roundDamage:0,gateBonus:0,interference:0,gateLoss:0},
+  controlTurns:0,hunterReductionTurns:0,fury:6,gatePhase:false,gates:[{progress:0},{progress:0}],
+  ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),weather:'rain',
+  energy:0,skillPoints:3,hunterSkillPoints:3,pendingDecodeEnergy:0,decodeActions:0,eventsTriggered:0,
+  hp:100,shield:10,hunterSkipAttack:0,playerGuardHits:0,hunterDamageBonus:0,hunterNextAttackReduction:0,
+  weaken:0,markedWeakenHits:0,markedWeakenAmount:0,mercenaryGuardRound:0,hunterShieldPierce:3,
+  doctorCooldown:0,doctorCooldownSetRound:0,weatherHunterFirstAttackRound:0,weatherDefenseUsedRound:0,
+  weatherAttackUsedRound:0,weatherAttackResourceUsedRound:0,weatherDefenseResourceUsedRound:0,
+  seerHitCount:0,perfumerArmed:false,shieldCounterDamage:0,reflectDamage:0,attackBonus:0,reflectBonus:0
+ },
+ selected:'doctor',gainFury(){},chooseHunterSkill(){},weatherHunterDamageBonus(){return 1;},
+ getExtraAttackChance(){return 0;},log(){},check(){},weatherTier(){return 1;},
+ triggerRandomEvent(){},draw(){},render(){},damageHunter(){return 0;}
+};
+const context=vm.createContext(enemyRuntime);
+vm.runInContext('Math.random=()=>0.99;',context);
+vm.runInContext(fn,context);
+vm.runInContext('enemyTurn();',context);
+assert.equal(enemyRuntime.state.hp,96,'Jack pierce bypasses three shield points on first hit only across a two-hit fury turn');
+assert.equal(enemyRuntime.state.shield,0,'second attack consumes remaining shield normally');
+assert.equal(enemyRuntime.state.hunterShieldPierce,0,'one-shot pierce is consumed exactly once');
+assert.equal(enemyRuntime.state.fury,0,'fury threshold is spent once for the extra attack');
+assert.equal(enemyRuntime.state.round,2,'multi-hit attack sequence advances the round once');
+console.log('Hunter attack runtime integration: one-shot pierce, remaining shield, fury double-hit and turn advancement PASS');
+
