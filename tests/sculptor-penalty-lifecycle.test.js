@@ -14,13 +14,13 @@ function advanceRound(state) {
     state.decodePenaltyRound=0;
   }
 }
-const state={round:4,decodePenalty:5,decodePenaltyRound:5};
+const state={round:4,decodePenalty:4,decodePenaltyRound:5};
 advanceRound(state);
 assert.equal(state.round,5);
 assert.equal(state.decodePenalty,5,'penalty must survive until the survivor acts in its target round');
 assert.equal(state.decodePenaltyRound,5);
 const decodePenalty=state.decodePenaltyRound===state.round?state.decodePenalty:0;
-assert.equal(decodePenalty,5,'decode action in target round must receive the penalty');
+assert.equal(decodePenalty,4,'decode action in target round must receive the penalty');
 advanceRound(state);
 assert.equal(state.round,6);
 assert.equal(state.decodePenalty,0,'penalty must expire after the target round ends');
