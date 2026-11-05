@@ -73,7 +73,7 @@ const context = vm.createContext({
 });
 vm.runInContext(liveScript, context, { timeout: 20000 });
 
-const harness = String.raw\`
+const harness = String.raw`
 render = () => {};
 log = () => {};
 stopWeatherAudio = () => {};
@@ -298,7 +298,7 @@ globalThis.__simulationResults = {
   hunters: hunterSummary,
   timeouts: all.filter(x => x.timeout).length
 };
-\`;
+`;
 vm.runInContext(harness, context, { timeout: 120000 });
 const results = context.__simulationResults;
 assert.equal(results.totalGames, 1000, 'exactly 1,000 complete-match simulations are executed');
