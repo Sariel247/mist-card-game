@@ -3,8 +3,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-const script=(html.match(/<script>([\\s\\S]*?)<\\/script>/)||[])[1];
-assert(script,'live page script exists');
+const scriptStart=html.indexOf('<script>')+'<script>'.length;
+const scriptEnd=html.indexOf('</script>',scriptStart);
+const script=html.slice(scriptStart,scriptEnd);
+assert(script.length>0,'live page script exists');
 
 const has=(snippet,label)=>assert(html.includes(snippet),label);
 has("case'queenMirror':state.hunterDamageBonus+=3;break;","queen bonus");
