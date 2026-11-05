@@ -68,7 +68,7 @@ for(const card of deck){
  assert(drawStart>=0&&drawEnd>drawStart,'draw function boundaries found');
  const drawBody=script.slice(drawStart+'function draw(n=1){'.length,drawEnd).replace(/\}\s*$/,'');
  const state={deck:[],hand:[]};
- const drawCards=new Function('state','deck','shuffle','return function(n=1){'+drawBody+'}')(state,deck,items=>[...items]);
+ const drawCards=new Function('state','deck','weightedShuffle','buildCardPool','return function(n=1){'+drawBody+'}')(state,deck,items=>[...items],()=>deck);
  drawCards(1);
  assert.equal(state.deck.length,83,'reshuffle restores 84 cards before drawing one');
  assert.equal(state.hand.length,1,'one requested card is drawn');
