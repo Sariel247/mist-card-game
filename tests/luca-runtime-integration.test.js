@@ -31,7 +31,7 @@ function buildProgressFunction(name, state, selected, events) {
   const apply = buildProgressFunction('applyLucaCipherProgress', state, 'luca', events);
   const result = apply(state.ciphers[1], 20);
   assert.equal(result.after, 20);
-  assert.equal(state.ciphers[0].progress, 25, '20% source gain transfers 5% to linked peer');
+  assert.equal(state.ciphers[2].progress, 5, '20% source gain transfers 5% to the lowest-progress linked peer');
   assert.equal(state.lucaLink.transferredThisRound, 5);
   assert.equal(state.lucaLink.charge, 1);
   assert.equal(events.fury.length, 2, 'source and transferred progress both update cipher fury milestones');
