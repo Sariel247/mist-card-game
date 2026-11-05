@@ -105,18 +105,18 @@ let selected='seer',state=null,serial=0;
 let selectedHunterRole='queen';const SAVE_KEY='mist-card-game-v080-save';
 const hunterPortraits={"queen":"assets/characters/queen.png","sculptor":"assets/characters/sculptor.png","jack":"assets/characters/jack.png"};
 const hunterRoleDefs={
-queen:{name:'红夫人 · 玛丽',skill:{id:'queenMirror',name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。',score:()=>state.hp+state.shield<20?8:5}},
+queen:{name:'红夫人 · 玛丽',skill:{id:'queenMirror',name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。',score:()=>state.hp+state.shield<20?8:5}},
 sculptor:{name:'雕刻家 · 伽拉泰亚',skill:{id:'sculptorSeal',name:'雕像封锁',cost:2,cooldown:4,desc:'求生者下一回合所有破译行动进度减少 4 个百分点。',score:()=>state.gatePhase?0:state.ciphers.some(c=>c.progress>=50&&c.progress<100)?9:5}},
 jack:{name:'杰克 · 开膛手',skill:{id:'jackFogblade',name:'雾刃',cost:2,cooldown:3,desc:'下一次攻击无视最多 2 点护盾。',score:()=>state.shield>0?8:4}}
 };
 const hunterBasePool=[
 {id:'control',name:'禁锢领域',cost:3,cooldown:3,desc:'束缚求生者下一回合，不能打牌或破译。',score:()=>state.hand.length>=2||state.gatePhase?8:4},
-{id:'rampage',name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 3 点伤害。',score:()=>state.hp+state.shield<22?8:5},
+{id:'rampage',name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。',score:()=>state.hp+state.shield<22?8:5},
 {id:'interference',name:'破译干扰',cost:3,cooldown:4,desc:'当前进度最高的未完成密码机倒退 8%。',score:()=>state.ciphers.some(c=>c.progress>=35&&c.progress<100)?9:3}
 ];
 const hunterSpecialPool=[
 {id:'barrier',name:'暗影屏障',cost:3,cooldown:4,desc:'接下来 2 个求生者行动回合，监管者受到伤害降低 25%。',score:()=>state.enemyHp/state.difficulty.enemyHp<.65?9:4},
-{id:'mark',name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。',score:()=>state.hp+state.shield<20?8:4},
+{id:'mark',name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。',score:()=>state.hp+state.shield<20?8:4},
 {id:'bloodrage',name:'血怒',cost:2,cooldown:4,desc:'立即获得 1 点愤怒值，下一次攻击额外造成 1 点伤害。',score:()=>state.fury>=3?8:5}
 ];
 function getHunterSkill(id){if(state.hunterRoleSkill.id===id)return state.hunterRoleSkill;return state.hunterBaseSkill.id===id?state.hunterBaseSkill:state.hunterSpecialSkill}
@@ -214,7 +214,7 @@ if(selected==='mercenary')add(player,'buff','佣兵 · 钢铁意志',state.merce
 if(selected==='perfumer'&&state.perfumerArmed)add(player,'buff','调香师 · 忘忧之香','香水已准备，下一次受到生命伤害后恢复最多 4 点生命。');
 if(selected==='perfumer'&&state.perfumerUsed)add(player,'debuff','调香师 · 香水已耗尽','本局忘忧之香已经使用，无法再次准备。');
 if(selected==='luca'&&state.lucaLink)add(player,'buff','囚徒 · 线路共振','当前连接 '+(state.lucaLink.gateMode?'两侧逃生大门':'密码机')+' '+state.lucaLink.a+' 与 '+state.lucaLink.b+'；本回合传导 '+state.lucaLink.transferredThisRound+'%，电荷 '+state.lucaLink.charge+'/3。');if(selected==='luca'&&state.hunterNextAttackReduction>0)add(player,'buff','囚徒 · 强电流','监管者下一次攻击伤害降低 '+state.hunterNextAttackReduction+' 点。');if(selected==='mechanic')add(player,'buff','机械师 · 机械傀儡','本局剩余 '+state.mechanicUses+' 次独立校准，每次推进当前未完成密码机 20%，不消耗能量，也不占用普通破译次数。');
-if(state.hunterReductionTurns>0)add(hunter,'hunter','监管者 · 坚壁','剩余 '+state.hunterReductionTurns+' 个求生者行动回合，受到伤害降低30%。');
+if(state.hunterReductionTurns>0)add(hunter,'hunter','监管者 · 坚壁','剩余 '+state.hunterReductionTurns+' 个求生者行动回合，受到伤害降低25%。');
 if(state.hunterDamageBonus>0)add(hunter,'hunter','监管者 · 追猎蓄力','下一次实际发动的攻击额外造成 '+state.hunterDamageBonus+' 点伤害。');
 if(state.decodePenaltyRound>=state.round&&state.decodePenalty>0)add(player,'debuff','雕像封锁','本回合每次破译进度减少 '+state.decodePenalty+' 个百分点。');
 if(state.hunterShieldPierce>0)add(player,'debuff','雾刃威胁','监管者下一次攻击将无视最多 '+state.hunterShieldPierce+' 点护盾。');
