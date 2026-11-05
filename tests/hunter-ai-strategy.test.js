@@ -39,4 +39,8 @@ has("name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 �
 has("name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'rampage description matches reduced damage');
 has("name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。'",'mark description matches reduced damage');
 has("受到伤害降低25%",'barrier status display matches reduced damage reduction');
-console.log('Hunter AI and first-time guide source audit: 37 assertions PASS');
+has("state.hunterSkillPoints+'/3'",'hunter UI displays a three-point cap');
+has("state.hunterSkillPoints=Math.min(3,hunterSkillBefore+1)",'hunter regenerates exactly one skill point per round, capped at three');
+has("savedState.hunterSkillPoints<=3",'restored saves validate the three-point hunter cap');
+has("savedState.hunterSkillPoints=Math.min(3,Math.max(0,savedState.hunterSkillPoints))",'legacy saves above three points are clamped on restore');
+console.log('Hunter AI and first-time guide source audit: 41 assertions PASS');

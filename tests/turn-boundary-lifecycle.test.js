@@ -16,7 +16,7 @@ has('if(reductionWasActive&&state.hunterReductionTurns>0)state.hunterReductionTu
 has('state.round++;','round advances after duration settlement');
 has('state.energy+=3+decodeBonus+weatherEnergy;','energy and pending decode bonus restored at turn boundary');
 has('state.skillPoints=Math.min(6,playerSkillBefore+2+weatherPlayerSkill);','player skill points capped at six');
-has('state.hunterSkillPoints=Math.min(6,hunterSkillBefore+2+weatherHunterSkill);','hunter skill points capped at six');
+has('state.hunterSkillPoints=Math.min(3,hunterSkillBefore+1);','hunter skill points capped at three and recover one per round');
 has('if(state.decodePenaltyRound<state.round){state.decodePenalty=0;state.decodePenaltyRound=0;}','decode penalty cleared after its target round');
 has('if(state.doctorCooldown>0&&state.round>state.doctorCooldownSetRound)state.doctorCooldown--;','doctor cooldown decremented after complete rounds');
 assert(skill.includes('(state.hunterSkillCooldowns[skill.id]||0)<=state.round'),'cooldown readiness uses current round');
@@ -27,15 +27,15 @@ assert(enemy.indexOf('const reductionWasActive=')<enemy.indexOf('chooseHunterSki
 
 has("if(state.round%3===1&&state.eventsTriggered<4)triggerRandomEvent();",'random event check runs after round increment and caps at four');
 has("if(state.weather==='rain'||state.weather==='wind')weatherEnergy=tier;",'rain and wind energy rewards are granted at each new-round boundary');
-has("if(state.weather==='fog'){weatherPlayerSkill=tier;weatherHunterSkill=tier;}",'fog restores both sides skill points at the round boundary');
-has("if(state.weather==='cold')weatherHunterSkill=tier;",'cold restores hunter skill points only');
+has("if(state.weather==='fog')weatherPlayerSkill=tier;",'fog weather skill-point bonus remains survivor-only');
+assert(!enemy.includes('weatherHunterSkill'),'weather does not grant extra hunter skill points');
 has('state.decodeActions=0;','ordinary decode action limit resets for the new round');
 has('state.pendingDecodeEnergy=0;','pending cipher milestone energy is consumed exactly once');
 has("state.weather==='wind'&&state.weatherAttackUsedRound!==state.round",'wind attack bonus is once per round',html);
 has('state.weatherDefenseUsedRound!==state.round','autumn/cold first defense bonus is once per round',html);
 has('state.weatherAttackResourceUsedRound!==state.round','thunder attack resource bonus is once per round',html);
 has('state.weatherDefenseResourceUsedRound!==state.round','autumn defense resource bonus is once per round',html);
-has('if(state.weather===\'cold\')weatherHunterSkill=tier;','cold weather does not grant survivor skill points');
+assert(!enemy.includes('state.hunterSkillPoints+=hunterExtra'),'gate-phase weather does not grant hunter skill points');
 has('state.eventsTriggered++;','event counter increments once for each selected event',html);
 has('state.lastEvent={name:event.name,desc:event.desc};','latest event is saved for UI and persistence',html);
 has('function persistGame(){','round changes are persisted through render',html);
@@ -72,7 +72,7 @@ assert.equal(runtimeState.round,13,'twelve enemy turns advance to round thirteen
 assert.equal(runtimeState.energy,49,'rain grants +1 energy each turn and pending decode bonus is consumed once');
 assert.equal(runtimeState.pendingDecodeEnergy,0,'pending decode energy is cleared after one settlement');
 assert.equal(runtimeState.skillPoints,6,'survivor skill points respect the six-point cap');
-assert.equal(runtimeState.hunterSkillPoints,6,'hunter skill points respect the six-point cap');
+assert.equal(runtimeState.hunterSkillPoints,3,'hunter skill points stay capped at three despite twelve rounds');
 assert.equal(runtimeState.decodeActions,0,'decode action counter resets after each turn');
 
 function duration(initial,activeSnapshot){let n=initial;for(let i=0;i<2;i++){if(activeSnapshot&&n>0)n--;}return n}
