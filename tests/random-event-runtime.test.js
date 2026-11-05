@@ -6,6 +6,7 @@ const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const scriptStart=html.indexOf('<script>')+'<script>'.length;
 const scriptEnd=html.indexOf('</script>',scriptStart);
 const script=html.slice(scriptStart,scriptEnd);
+const Luca=require('../luca-mechanics.js');
 assert(script.length>0,'inline script exists');
 assert.doesNotThrow(()=>new Function(script),'page inline JavaScript parses');
 const start=script.indexOf('function triggerRandomEvent(){');
@@ -35,13 +36,23 @@ for(let i=0;i<expected.length;i++){
 
 {
  const calls=[];
- const state={energy:5,hp:10,hero:{hp:24},skillPoints:4,shield:0,fury:0,eventsTriggered:0,lastEvent:null,ciphers:[{id:1,progress:20},{id:2,progress:10}]};
+ const state={round:3,energy:5,hp:10,hero:{hp:24},skillPoints:4,shield:0,fury:0,eventsTriggered:0,lastEvent:null,ciphers:[{id:1,progress:20},{id:2,progress:10}],lucaLink:Luca.createLink([{id:1,progress:20},{id:2,progress:10}])};
+ const applyStart=script.indexOf('function applyLucaCipherProgress(');
+ const applyEnd=script.indexOf('\nfunction applyLucaGateProgress(',applyStart);
+ assert(applyStart>=0&&applyEnd>applyStart,'live Luca cipher progress function boundaries found');
+ const applySource=script.slice(applyStart,applyEnd);
+ const apply=new Function('state','selected','LucaMechanics','trackCipherFury','log',applySource+';return applyLucaCipherProgress;')(
+  state,'luca',Luca,(...args)=>calls.push(['furyTrack',...args]),message=>calls.push(message)
+ );
  const originalRandom=Math.random;
  Math.random=()=>.3;
  try{
-  create(state,'luca',x=>calls.push(x),(...args)=>calls.push(['furyTrack',...args]),()=>calls.push('gate'),n=>state.shield+=n,n=>state.fury+=n,(target,gain)=>{target.progress+=gain;state.ciphers[1].progress+=Math.floor(gain*.25);})()
+  create(state,'luca',x=>calls.push(x),(...args)=>calls.push(['furyTrack',...args]),()=>calls.push('gate'),n=>state.shield+=n,n=>state.fury+=n,apply)()
  }finally{Math.random=originalRandom;}
  assert.equal(state.ciphers[0].progress,35,'Luca receives random event progress');
- assert.equal(state.ciphers[1].progress,13,'Luca circuit transmits random event progress');
+ assert.equal(state.ciphers[1].progress,13,'actual Luca helper transmits random event progress');
+ assert.equal(state.lucaLink.transferredThisRound,3,'event transfer is recorded in the live circuit state');
+ assert.equal(state.lucaLink.charge,1,'event transfer grants one charge through the real helper');
+ assert.equal(calls.filter(x=>Array.isArray(x)&&x[0]==='furyTrack').length,2,'source and transferred event progress both track milestones');
 }
 console.log('PASS: 7 random event branches + Luca circuit integration');
