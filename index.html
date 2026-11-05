@@ -105,19 +105,19 @@ let selected='seer',state=null,serial=0;
 let selectedHunterRole='queen';const SAVE_KEY='mist-card-game-v080-save';
 const hunterPortraits={"queen":"assets/characters/queen.png","sculptor":"assets/characters/sculptor.png","jack":"assets/characters/jack.png"};
 const hunterRoleDefs={
-queen:{name:'红夫人 · 玛丽',skill:{id:'queenMirror',name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 3 点伤害。',score:()=>state.hp+state.shield<20?8:5}},
-sculptor:{name:'雕刻家 · 伽拉泰亚',skill:{id:'sculptorSeal',name:'雕像封锁',cost:2,cooldown:4,desc:'求生者下一回合所有破译行动进度减少 5 个百分点。',score:()=>state.gatePhase?0:state.ciphers.some(c=>c.progress>=50&&c.progress<100)?9:5}},
-jack:{name:'杰克 · 开膛手',skill:{id:'jackFogblade',name:'雾刃',cost:2,cooldown:3,desc:'下一次攻击无视最多 3 点护盾。',score:()=>state.shield>0?8:4}}
+queen:{name:'红夫人 · 玛丽',skill:{id:'queenMirror',name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。',score:()=>state.hp+state.shield<20?8:5}},
+sculptor:{name:'雕刻家 · 伽拉泰亚',skill:{id:'sculptorSeal',name:'雕像封锁',cost:2,cooldown:4,desc:'求生者下一回合所有破译行动进度减少 4 个百分点。',score:()=>state.gatePhase?0:state.ciphers.some(c=>c.progress>=50&&c.progress<100)?9:5}},
+jack:{name:'杰克 · 开膛手',skill:{id:'jackFogblade',name:'雾刃',cost:2,cooldown:3,desc:'下一次攻击无视最多 2 点护盾。',score:()=>state.shield>0?8:4}}
 };
 const hunterBasePool=[
 {id:'control',name:'禁锢领域',cost:3,cooldown:3,desc:'束缚求生者下一回合，不能打牌或破译。',score:()=>state.hand.length>=2||state.gatePhase?8:4},
-{id:'rampage',name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 3 点伤害。',score:()=>state.hp+state.shield<22?8:5},
-{id:'interference',name:'破译干扰',cost:3,cooldown:4,desc:'当前进度最高的未完成密码机倒退 10%。',score:()=>state.ciphers.some(c=>c.progress>=35&&c.progress<100)?9:3}
+{id:'rampage',name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。',score:()=>state.hp+state.shield<22?8:5},
+{id:'interference',name:'破译干扰',cost:3,cooldown:4,desc:'当前进度最高的未完成密码机倒退 8%。',score:()=>state.ciphers.some(c=>c.progress>=35&&c.progress<100)?9:3}
 ];
 const hunterSpecialPool=[
-{id:'barrier',name:'暗影屏障',cost:3,cooldown:4,desc:'接下来 2 个求生者行动回合，监管者受到伤害降低 30%。',score:()=>state.enemyHp/state.difficulty.enemyHp<.65?9:4},
-{id:'mark',name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。',score:()=>state.hp+state.shield<20?8:4},
-{id:'bloodrage',name:'血怒',cost:2,cooldown:4,desc:'立即获得 2 点愤怒值，下一次攻击额外造成 2 点伤害。',score:()=>state.fury>=3?8:5}
+{id:'barrier',name:'暗影屏障',cost:3,cooldown:4,desc:'接下来 2 个求生者行动回合，监管者受到伤害降低 25%。',score:()=>state.enemyHp/state.difficulty.enemyHp<.65?9:4},
+{id:'mark',name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。',score:()=>state.hp+state.shield<20?8:4},
+{id:'bloodrage',name:'血怒',cost:2,cooldown:4,desc:'立即获得 1 点愤怒值，下一次攻击额外造成 1 点伤害。',score:()=>state.fury>=3?8:5}
 ];
 function getHunterSkill(id){if(state.hunterRoleSkill.id===id)return state.hunterRoleSkill;return state.hunterBaseSkill.id===id?state.hunterBaseSkill:state.hunterSpecialSkill}
 function hunterSkillReady(skill){return (state.hunterSkillCooldowns[skill.id]||0)<=state.round&&state.hunterSkillPoints>=skill.cost&&state.hunterSkillUsedRound!==state.round}
@@ -125,15 +125,15 @@ function useHunterSkill(id){
 const skill=getHunterSkill(id);if(state.over||!skill||!hunterSkillReady(skill))return false;
 state.hunterSkillPoints-=skill.cost;state.hunterSkillCooldowns[skill.id]=state.round+skill.cooldown+1;state.hunterSkillUsedRound=state.round;
 switch(id){
-case'queenMirror':state.hunterDamageBonus+=3;break;
-case'sculptorSeal':state.decodePenalty=5;state.decodePenaltyRound=state.round+1;break;
-case'jackFogblade':state.hunterShieldPierce+=3;break;
-case'control':state.controlTurns=Math.max(state.controlTurns,state.weather==='fog'?(state.gatePhase?2:1):1);break;
-case'rampage':state.hunterDamageBonus+=3;break;
-case'interference':{const target=state.ciphers.filter(c=>c.progress<100).sort((a,b)=>b.progress-a.progress)[0];if(target){const before=target.progress;target.progress=Math.max(0,target.progress-10);log('破译干扰：密码机 '+target.id+' 进度 '+before+'% → '+target.progress+'%。');}break;}
+case'queenMirror':state.hunterDamageBonus+=2;break;
+case'sculptorSeal':state.decodePenalty=4;state.decodePenaltyRound=state.round+1;break;
+case'jackFogblade':state.hunterShieldPierce+=2;break;
+case'control':state.controlTurns=Math.max(state.controlTurns,1);break;
+case'rampage':state.hunterDamageBonus+=2;break;
+case'interference':{const target=state.ciphers.filter(c=>c.progress<100).sort((a,b)=>b.progress-a.progress)[0];if(target){const before=target.progress;target.progress=Math.max(0,target.progress-8);log('破译干扰：密码机 '+target.id+' 进度 '+before+'% → '+target.progress+'%。');}break;}
 case'barrier':state.hunterReductionTurns=Math.max(state.hunterReductionTurns,2);break;
-case'mark':state.hunterDamageBonus+=2;break;
-case'bloodrage':state.fury+=2;state.hunterDamageBonus+=2;break;
+case'mark':state.hunterDamageBonus+=1;break;
+case'bloodrage':state.fury+=1;state.hunterDamageBonus+=1;break;
 }
 if(state.weather==='wind')state.hunterDamageBonus+=weatherTier();log('监管者发动「'+skill.name+'」：'+skill.desc+' 消耗 '+skill.cost+' 点技能点。'+(state.weather==='wind'?' 逆风连携：下一次攻击额外 +'+weatherTier()+' 点伤害。':''));
 render();return true;
@@ -163,7 +163,7 @@ function getExtraAttackChance(){const roundBonus=state.round<=2?0:state.round<=4
 const weatherDefs={
 sun:{name:'☀️ 晴天',phase:'平静天气',base:'没有天气增益或减益。双方按照常规规则进行对局。',gate:'晴天在大门阶段也不会强化。',weight:60},
 rain:{name:'🌧️ 暴雨',phase:'防御与压迫',base:'求生者获得护盾时额外 +1；监管者每次攻击额外 +1 伤害；求生者每回合额外恢复 1 点能量。',gate:'强化：护盾额外 +2，监管者每次攻击额外 +2 伤害；求生者每回合额外恢复 2 点能量。',weight:40},
-fog:{name:'🌫️ 浓雾',phase:'控制与干扰',base:'求生者使用迷雾束缚时额外增加 1 次陷阱；监管者禁锢领域持续 1 回合；双方每回合额外恢复 1 点技能点。',gate:'强化：迷雾束缚额外增加 2 次陷阱；监管者禁锢领域延长至 2 回合；双方每回合额外恢复 2 点技能点。',weight:40},
+fog:{name:'🌫️ 浓雾',phase:'控制与干扰',base:'求生者使用迷雾束缚时额外增加 1 次陷阱；监管者禁锢领域持续 1 回合；双方每回合额外恢复 1 点技能点。',gate:'强化：迷雾束缚额外增加 2 次陷阱；监管者禁锢领域仍持续 1 回合；双方每回合额外恢复 2 点技能点。',weight:40},
 thunder:{name:'⚡ 雷暴',phase:'高爆发',base:'求生者攻击牌 +1 伤害；监管者每次攻击 +1 伤害；求生者每回合首次打出攻击牌后额外恢复 1 点能量。',gate:'强化：双方攻击增益提高至 +2；求生者首次打出攻击牌后额外恢复 2 点能量。',weight:40},
 autumn:{name:'🍂 落叶',phase:'持久作战',base:'求生者每回合首次防御卡额外获得 1 护盾并恢复 1 点技能点；监管者每次命中增加 1 点愤怒。',gate:'强化：首次防御额外获得 2 护盾并恢复 2 点技能点；监管者每次命中增加 2 点愤怒。',weight:40},
 cold:{name:'❄️ 寒潮',phase:'节奏控制',base:'求生者密码机破译 -5%；每回合首次防御额外 +1 护盾；监管者首次攻击 -1 伤害；监管者每回合额外恢复 1 点技能点。',gate:'强化：大门普通破译与大门工具箱额外推进 +10%；监管者首次攻击 +2 伤害；监管者每回合额外恢复 2 点技能点。',weight:40},
@@ -214,7 +214,7 @@ if(selected==='mercenary')add(player,'buff','佣兵 · 钢铁意志',state.merce
 if(selected==='perfumer'&&state.perfumerArmed)add(player,'buff','调香师 · 忘忧之香','香水已准备，下一次受到生命伤害后恢复最多 4 点生命。');
 if(selected==='perfumer'&&state.perfumerUsed)add(player,'debuff','调香师 · 香水已耗尽','本局忘忧之香已经使用，无法再次准备。');
 if(selected==='luca'&&state.lucaLink)add(player,'buff','囚徒 · 线路共振','当前连接 '+(state.lucaLink.gateMode?'两侧逃生大门':'密码机')+' '+state.lucaLink.a+' 与 '+state.lucaLink.b+'；本回合传导 '+state.lucaLink.transferredThisRound+'%，电荷 '+state.lucaLink.charge+'/3。');if(selected==='luca'&&state.hunterNextAttackReduction>0)add(player,'buff','囚徒 · 强电流','监管者下一次攻击伤害降低 '+state.hunterNextAttackReduction+' 点。');if(selected==='mechanic')add(player,'buff','机械师 · 机械傀儡','本局剩余 '+state.mechanicUses+' 次独立校准，每次推进当前未完成密码机 20%，不消耗能量，也不占用普通破译次数。');
-if(state.hunterReductionTurns>0)add(hunter,'hunter','监管者 · 坚壁','剩余 '+state.hunterReductionTurns+' 个求生者行动回合，受到伤害降低30%。');
+if(state.hunterReductionTurns>0)add(hunter,'hunter','监管者 · 坚壁','剩余 '+state.hunterReductionTurns+' 个求生者行动回合，受到伤害降低25%。');
 if(state.hunterDamageBonus>0)add(hunter,'hunter','监管者 · 追猎蓄力','下一次实际发动的攻击额外造成 '+state.hunterDamageBonus+' 点伤害。');
 if(state.decodePenaltyRound>=state.round&&state.decodePenalty>0)add(player,'debuff','雕像封锁','本回合每次破译进度减少 '+state.decodePenalty+' 个百分点。');
 if(state.hunterShieldPierce>0)add(player,'debuff','雾刃威胁','监管者下一次攻击将无视最多 '+state.hunterShieldPierce+' 点护盾。');
@@ -232,7 +232,7 @@ state.hand.forEach((card,i)=>{const b=document.createElement('button');b.classNa
 const completed=state.ciphers.filter(x=>x.progress>=100).length;$('cipherSummary').textContent=completed+' / 5 已完成';$('gateArea').classList.toggle('active',state.gatePhase);state.gates.forEach((g,i)=>{$('gatePct'+i).textContent=g.progress>=100?'已开启':g.progress+'%';$('gateBar'+i).style.width=g.progress+'%';$('gateCard'+i).classList.toggle('open',g.progress>=100);$('gate'+i).disabled=!state.gatePhase||state.over||state.controlTurns>0||state.energy<1||g.progress>=100});const opened=state.gates.filter(g=>g.progress>=100).length;$('gateSummary').textContent=opened+' / 2 扇大门已开启';$('gateHint').textContent=state.gatePhase?'监管者会持续施压，破译大门时请留意生命与能量。':'五台密码机全部完成后，选择一扇大门继续破译。';$('escape').classList.toggle('ready',opened>0);$('cipherGrid').innerHTML=state.ciphers.map(x=>'<div class="cipher '+(x.progress>=100?'done':'')+'"><div class="cipher-name">密码机 '+String(x.id).padStart(2,'0')+'</div><div class="cipher-track"><span style="width:'+x.progress+'%"></span></div><div class="cipher-percent">'+(x.progress>=100?'✓ 完成':x.progress+'%')+'</div></div>').join('');$('lucaPanel').hidden=selected!=='luca';if(selected==='luca'){const link=state.lucaLink;const labelFor=id=>link&&link.gateMode?(id===0?'东侧大门':'西侧大门'):'密码机 '+String(id).padStart(2,'0');const charge=link?link.charge:0;const progress=link?link.transferredThisRound:0;const threshold=link?(link.gateMode?10:15):0;$('lucaPanel').innerHTML=link&&!link.dormant?'<div class="luca-circuit-head"><strong>⚡ 线路共振</strong><span>'+labelFor(link.a)+' ↔ '+labelFor(link.b)+'</span></div><div class="luca-circuit-track"><span style="width:'+(charge/3*100)+'%"></span></div><div class="luca-circuit-meta"><span>本回合传导 <strong>'+progress+'%</strong> / 强电流强化阈值 '+threshold+'%</span><span>储存电荷 <strong>'+charge+'/3</strong></span><span>'+(link.skillUsedRound===state.round?'强电流本回合已释放':charge>=3?'强电流可用':'还需 '+(3-charge)+' 点电荷')+'</span></div>': '<div class="luca-circuit-head"><strong>⚡ 线路共振</strong><span>线路暂时中断 · 电荷 '+charge+'/3</span></div><div class="luca-circuit-meta"><span>当前不足两台未完成目标，储存电荷不会清空；下一阶段会尝试重新连接。</span></div>'}const target=state.ciphers.find(x=>x.progress<100);$('cipherHint').textContent=target?'当前目标：密码机 '+String(target.id).padStart(2,'0')+'。每次破译推进 20%'+(selected==='thief'?'（慈善家额外 +5%）':'')+'。本回合已破译 '+state.decodeActions+'/3 次。':'五台密码机全部破译完成！本回合已破译 '+state.decodeActions+'/3 次。';$('decode').disabled=state.over||state.controlTurns>0||state.energy<1||!target||state.decodeActions>=3;$('endTurn').disabled=state.over;$('redraw').disabled=state.over||state.controlTurns>0||state.energy<1||!state.hand.length;persistGame();
 }
 function useSkill(){if(!state||state.over)return;if(selected==='luca'){const link=state.lucaLink;if(!link||link.charge<3||link.skillUsedRound===state.round||state.controlTurns>0)return;link.charge-=3;link.skillUsedRound=state.round;const bonus=link.transferredThisRound>=(link.gateMode?10:15)?3:0;const dealt=damageHunter(5+bonus);state.hunterNextAttackReduction=2;log('囚徒释放「强电流」：监管者受到 '+dealt+' 点伤害'+(bonus?'（线路传导达标，额外 +3）':'')+'，下一次攻击伤害降低 2 点。');}else if(selected==='doctor'){if(state.doctorCooldown>0||state.hp>=state.hero.hp)return;const before=state.hp;state.hp=Math.min(state.hero.hp,state.hp+5);state.doctorCooldown=2;state.doctorCooldownSetRound=state.round;log('医生发动「医药专精」：恢复 '+(state.hp-before)+' 点生命，接下来 2 个完整回合无法再次使用。');}else if(selected==='perfumer'&&!state.perfumerUsed&&!state.perfumerArmed){state.perfumerArmed=true;log('调香师发动「忘忧之香」：香水已准备，下一次受到生命伤害后恢复最多 4 点生命，本局仅此一次。');}else if(selected==='mechanic'&&state.mechanicUses>0){const target=state.ciphers.find(x=>x.progress<100);if(!target)return;const before=target.progress;const statuePenalty=state.decodePenaltyRound===state.round?state.decodePenalty:0;const coldPenalty=weatherDecodePenalty();const gain=Math.max(0,20-statuePenalty-coldPenalty);if(gain<=0){log('机械师的傀儡受到封锁，未能推进进度，本次使用次数未消耗。');render();return}state.mechanicUses--;target.progress=Math.min(100,target.progress+gain);trackCipherFury(before,target.progress);log('机械师发动「机械傀儡」：傀儡独立校准密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。本局剩余 '+state.mechanicUses+' 次。'+(statuePenalty?'（雕像封锁 -'+statuePenalty+'%）':'')+(coldPenalty?'（寒潮 -'+coldPenalty+'%）':''));if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();}render()}
-function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;state.damageDealt=(state.damageDealt||0)+reduced;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 30%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
+function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.75):amount;state.damageDealt=(state.damageDealt||0)+reduced;state.enemyHp-=reduced;if(state.hunterReductionTurns>0)log('监管者减伤 25%：原伤害 '+amount+'，实际受到 '+reduced+' 点伤害。');return reduced;}
 function getHunterSkillScore(skill){
 const unfinished=state.ciphers.filter(x=>x.progress<100),cipherLead=unfinished.length?Math.max(...unfinished.map(x=>x.progress)):0,gateLead=state.gates.length?Math.max(...state.gates.map(x=>x.progress)):0,playerTotal=state.hp+state.shield,enemyRatio=state.enemyHp/state.difficulty.enemyHp;
 switch(skill.id){

@@ -30,7 +30,7 @@ const enemyRuntime={
   ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),weather:'rain',
   energy:0,skillPoints:3,hunterSkillPoints:3,pendingDecodeEnergy:0,decodeActions:0,eventsTriggered:0,
   hp:100,shield:10,hunterSkipAttack:0,playerGuardHits:0,hunterDamageBonus:0,hunterNextAttackReduction:0,
-  weaken:0,markedWeakenHits:0,markedWeakenAmount:0,mercenaryGuardRound:0,hunterShieldPierce:3,
+  weaken:0,markedWeakenHits:0,markedWeakenAmount:0,mercenaryGuardRound:0,hunterShieldPierce:2,
   doctorCooldown:0,doctorCooldownSetRound:0,weatherHunterFirstAttackRound:0,weatherDefenseUsedRound:0,
   weatherAttackUsedRound:0,weatherAttackResourceUsedRound:0,weatherDefenseResourceUsedRound:0,
   seerHitCount:0,perfumerArmed:false,shieldCounterDamage:0,reflectDamage:0,attackBonus:0,reflectBonus:0
@@ -43,7 +43,7 @@ const context=vm.createContext(enemyRuntime);
 vm.runInContext('Math.random=()=>0.99;',context);
 vm.runInContext(fn,context);
 vm.runInContext('enemyTurn();',context);
-assert.equal(enemyRuntime.state.hp,96,'Jack pierce bypasses three shield points on first hit only across a two-hit fury turn');
+assert.equal(enemyRuntime.state.hp,96,'Jack pierce bypasses two shield points on first hit only across a two-hit fury turn');
 assert.equal(enemyRuntime.state.shield,0,'second attack consumes remaining shield normally');
 assert.equal(enemyRuntime.state.hunterShieldPierce,0,'one-shot pierce is consumed exactly once');
 assert.equal(enemyRuntime.state.fury,0,'fury threshold is spent once for the extra attack');

@@ -25,4 +25,18 @@ has("const status=state.hunterSkillUsedRound===state.round?'本回合已释放�
 has("'监管者正在蓄力，下一次攻击额外造成 '+state.hunterDamageBonus+' 点伤害。 '",'hunter attack charge UI displays the actual stacked bonus');
 assert.equal(1+3+1-1,4,'cooldown countdown on cast round is represented by the used-this-round status, not a misleading four-round label');
 
-console.log('Hunter AI and first-time guide source audit: 23 assertions PASS');
+has("case'queenMirror':state.hunterDamageBonus+=2;break;",'queen damage bonus is reduced to 2');
+has("case'sculptorSeal':state.decodePenalty=4;",'sculptor decode penalty is reduced to 4');
+has("case'jackFogblade':state.hunterShieldPierce+=2;break;",'Jack shield pierce is reduced to 2');
+has("case'control':state.controlTurns=Math.max(state.controlTurns,1);break;",'fog gate no longer extends hunter control duration');
+has("case'rampage':state.hunterDamageBonus+=2;break;",'rampage damage bonus is reduced to 2');
+has("target.progress=Math.max(0,target.progress-8);",'interference rollback is reduced to 8 percent');
+has("case'barrier':state.hunterReductionTurns=Math.max(state.hunterReductionTurns,2);break;",'barrier duration remains two survivor turns');
+has("Math.round(amount*0.75):amount",'barrier damage reduction is reduced to 25 percent');
+has("case'mark':state.hunterDamageBonus+=1;break;",'prey mark bonus is reduced to 1');
+has("case'bloodrage':state.fury+=1;state.hunterDamageBonus+=1;break;",'bloodrage gains are reduced to 1 each');
+has("name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'queen description matches reduced damage');
+has("name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'rampage description matches reduced damage');
+has("name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。'",'mark description matches reduced damage');
+has("受到伤害降低25%",'barrier status display matches reduced damage reduction');
+console.log('Hunter AI and first-time guide source audit: 37 assertions PASS');
