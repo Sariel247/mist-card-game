@@ -241,7 +241,7 @@ function wilson(wins, total) {
 const heroes = ['seer', 'doctor', 'thief', 'mercenary', 'mechanic', 'perfumer', 'luca'];
 const batches = [];
 const all = [];
-for (let batch = 0; batch < 5; batch++) {
+for (let batch = 0; batch < 7; batch++) {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     const globalIndex = batch * 200 + i;
@@ -301,12 +301,13 @@ globalThis.__simulationResults = {
 `;
 vm.runInContext(harness, context, { timeout: 120000 });
 const results = context.__simulationResults;
-assert.equal(results.totalGames, 1000, 'exactly 1,000 complete-match simulations are executed');
-assert.equal(results.batches.length, 5, 'five batches of 200 matches are executed');
+assert.equal(results.totalGames, 1400, 'exactly 1,400 complete-match simulations are executed');
+assert.equal(results.batches.length, 7, 'seven batches of 200 matches are executed');
 assert(results.batches.every(batch => batch.games === 200), 'each batch contains exactly 200 matches');
 assert.equal(results.heroes.length, 7, 'all seven survivor characters are tested');
-assert(results.heroes.every(hero => hero.games >= 142 && hero.games <= 143), 'match allocation is balanced across all seven survivors');
+assert(results.heroes.every(hero => hero.games === 200), 'each survivor receives exactly 200 matches');
+
 assert.equal(results.timeouts, 0, 'all matches terminate within the 45-round safety limit');
 
-console.log('Automatic match simulation: 5 x 200 matches using live game functions PASS');
+console.log('Automatic match simulation: 7 survivors x 200 matches (1,400 total) using live game functions PASS');
 console.log(JSON.stringify(results, null, 2));
