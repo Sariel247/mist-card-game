@@ -12,7 +12,7 @@ const start=script.indexOf('function triggerRandomEvent(){');
 const end=script.indexOf('function persistGame(){',start);
 assert(start>=0&&end>start,'random event function boundaries found');
 const body=script.slice(start+'function triggerRandomEvent(){'.length,end).trim().slice(0,-1);
-const create=new Function('state','log','trackCipherFury','activateGatePhase','grantWeatherShield','gainFury','return function(){'+body+'}');
+const create=new Function('state','selected','log','trackCipherFury','activateGatePhase','grantWeatherShield','gainFury','applyLucaCipherProgress','return function(){'+body+'}');
 const expected=['遗落的补给箱','紧急医疗包','密码机残留数据','临时屏障','追猎气息','灵感闪现','破译干扰'];
 for(let i=0;i<expected.length;i++){
  const calls=[],sequence=[(i+.1)/expected.length,.1];
@@ -20,7 +20,7 @@ for(let i=0;i<expected.length;i++){
  const originalRandom=Math.random;
  Math.random=()=>sequence.length?sequence.shift():.1;
  try{
-  create(state,x=>calls.push(x),(...args)=>calls.push(['furyTrack',...args]),()=>calls.push('gate'),n=>state.shield+=n,n=>state.fury+=n)();
+  create(state,'seer',x=>calls.push(x),(...args)=>calls.push(['furyTrack',...args]),()=>calls.push('gate'),n=>state.shield+=n,n=>state.fury+=n,()=>{})();
  }finally{Math.random=originalRandom;}
  assert.equal(state.eventsTriggered,1,'event counter increments');
  assert.equal(state.lastEvent.name,expected[i],'event name matches pool order');
@@ -32,4 +32,16 @@ for(let i=0;i<expected.length;i++){
  if(i===5)assert.equal(state.skillPoints,6,'inspiration respects 6-point cap');
  if(i===6)assert.equal(state.ciphers[0].progress,10,'interference removes 10% progress');
 }
-console.log('PASS: 7 random event runtime branches');
+
+{
+ const calls=[];
+ const state={energy:5,hp:10,hero:{hp:24},skillPoints:4,shield:0,fury:0,eventsTriggered:0,lastEvent:null,ciphers:[{id:1,progress:20},{id:2,progress:10}]};
+ const originalRandom=Math.random;
+ Math.random=()=>.3;
+ try{
+  create(state,'luca',x=>calls.push(x),(...args)=>calls.push(['furyTrack',...args]),()=>calls.push('gate'),n=>state.shield+=n,n=>state.fury+=n,(target,gain)=>{target.progress+=gain;state.ciphers[1].progress+=Math.floor(gain*.25);})()
+ }finally{Math.random=originalRandom;}
+ assert.equal(state.ciphers[0].progress,35,'Luca receives random event progress');
+ assert.equal(state.ciphers[1].progress,13,'Luca circuit transmits random event progress');
+}
+console.log('PASS: 7 random event branches + Luca circuit integration');
