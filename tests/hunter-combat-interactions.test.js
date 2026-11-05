@@ -9,13 +9,13 @@ const script=html.slice(scriptStart,scriptEnd);
 assert(script.length>0,'live page script exists');
 
 const has=(snippet,label)=>assert(html.includes(snippet),label);
-has("case'queenMirror':state.hunterDamageBonus+=3;break;","queen bonus");
-has("case'jackFogblade':state.hunterShieldPierce+=3;break;","jack pierce");
+has("case'queenMirror':state.hunterDamageBonus+=2;break;","queen bonus");
+has("case'jackFogblade':state.hunterShieldPierce+=2;break;","jack pierce");
 has("if(state.weather==='wind')state.hunterDamageBonus+=weatherTier();","wind bonus");
 has("if(state.weather==='rain'||state.weather==='thunder')return weatherTier();","rain/thunder bonus");
 has("const pierced=Math.min(pierceBudget,state.shield,dmg);","bounded pierce");
 has("const blocked=Math.min(state.shield,remainingDamage);state.shield-=blocked;","shield consumption");
-has("function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.7):amount;","shared damage reduction");
+has("function damageHunter(amount){const reduced=state.hunterReductionTurns>0?Math.round(amount*0.75):amount;","shared damage reduction");
 has("const reflectWeather=state.weather==='thunder'?weatherTier():0;const dealt=damageHunter(reflected+reflectWeather);","thunder retaliation");
 has("const counterWeather=state.weather==='thunder'?weatherTier():0;const dealt=damageHunter(counter+counterWeather);","thunder mirror");
 has("if(blocked>0&&state.shieldCounterDamage>0)","mirror trigger");
@@ -26,7 +26,7 @@ assert.deepEqual(hit({damage:8,shield:5,pierce:3}),{pierced:3,blocked:5,shieldLe
 assert.deepEqual(hit({damage:8,shield:2,pierce:3}),{pierced:2,blocked:2,shieldLeft:0,hpLoss:6});
 assert.deepEqual(hit({damage:2,shield:5,pierce:3}),{pierced:2,blocked:0,shieldLeft:5,hpLoss:2});
 assert.deepEqual(hit({damage:4,shield:5}),{pierced:0,blocked:4,shieldLeft:1,hpLoss:0});
-const reduced=(n,barrier)=>barrier?Math.round(n*.7):n;
+const reduced=(n,barrier)=>barrier?Math.round(n*.75):n;
 assert.equal(reduced(10,true),7);assert.equal(reduced(5,true),4);assert.equal(reduced(3,false),3);
 
 function extractFunction(name){
@@ -59,19 +59,19 @@ function extractFunction(name){
   extractFunction('useHunterSkill')+';return useHunterSkill;')(state,get,ready,x=>logs.push(x),()=>{});
  const damage=new Function('state','log',extractFunction('damageHunter')+';return damageHunter;')(state,x=>logs.push(x));
  assert.equal(use('queenMirror'),true,'actual hunter skill function activates queen attack bonus');
- assert.equal(state.hunterDamageBonus,3);
+ assert.equal(state.hunterDamageBonus,2);
  assert.equal(state.hunterSkillPoints,4);
  assert.equal(use('barrier'),false,'only one hunter skill may be used per round');
  state.round=5;state.hunterSkillUsedRound=4;
  assert.equal(use('barrier'),true,'actual barrier skill activates on next round');
  assert.equal(state.hunterReductionTurns,2);
- assert.equal(damage(10),7,'actual damage function applies 30% barrier reduction');
- assert.equal(state.damageDealt,7,'damage statistics record reduced damage');
- assert.equal(state.enemyHp,43,'hunter HP receives reduced damage');
+ assert.equal(damage(10),8,'actual damage function applies 25% barrier reduction');
+ assert.equal(state.damageDealt,8,'damage statistics record reduced damage');
+ assert.equal(state.enemyHp,42,'hunter HP receives reduced damage');
  state.round=6;state.hunterSkillUsedRound=5;state.hunterSkillPoints=6;
  assert.equal(use('jackFogblade'),true,'actual Jack skill activates after its own cooldown/round gate');
- assert.equal(state.hunterShieldPierce,3);
- assert(logs.some(x=>x.includes('监管者减伤 30%')),'actual damage function logs the barrier reduction');
+ assert.equal(state.hunterShieldPierce,2);
+ assert(logs.some(x=>x.includes('监管者减伤 25%')),'actual damage function logs the barrier reduction');
 }
 
 console.log('Hunter combat interaction audit: source guards, arithmetic, and actual hunter-skill/damage runtime PASS');
