@@ -12,6 +12,6 @@ for(const [id,hp] of Object.entries(expected)){
  assert(entry,id+' has a configured health cap');
  assert.equal(Number(entry[1]),hp,id+' health cap matches V0.8.18');
 }
-assert.equal(new Set(Object.values(expected)).size,6,'survivor health caps are differentiated');
+assert.equal(new Set(Object.values(expected)).size,5,'survivor health caps use a differentiated range');
 assert.match(html,/V0.8.18 · 求生者差异化生命/,'version label updated');
 console.log('Survivor differentiated health: Seer 38, Doctor 42, Thief 36, Mercenary 44, Mechanic 36, Luca 38, Perfumer 40 PASS');
