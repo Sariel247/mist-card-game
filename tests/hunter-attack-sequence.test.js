@@ -50,3 +50,35 @@ assert.equal(enemyRuntime.state.fury,0,'fury threshold is spent once for the ext
 assert.equal(enemyRuntime.state.round,2,'multi-hit attack sequence advances the round once');
 console.log('Hunter attack runtime integration: one-shot pierce, remaining shield, fury double-hit and turn advancement PASS');
 
+{
+ const comboState={
+  over:false,round:2,difficulty:{damage:6,roundDamage:0,gateBonus:0,interference:0,gateLoss:0},
+  controlTurns:0,hunterReductionTurns:0,fury:0,gatePhase:false,gates:[{progress:0},{progress:0}],
+  ciphers:Array.from({length:5},(_,i)=>({id:i+1,progress:0})),weather:'thunder',
+  energy:0,skillPoints:3,hunterSkillPoints:3,pendingDecodeEnergy:0,decodeActions:0,eventsTriggered:0,
+  hp:100,shield:4,hunterSkipAttack:0,playerGuardHits:0,hunterDamageBonus:0,hunterNextAttackReduction:0,
+  weaken:0,markedWeakenHits:0,markedWeakenAmount:0,mercenaryGuardRound:0,hunterShieldPierce:0,
+  doctorCooldown:0,doctorCooldownSetRound:0,weatherHunterFirstAttackRound:0,weatherDefenseUsedRound:0,
+  weatherAttackUsedRound:0,weatherAttackResourceUsedRound:0,weatherDefenseResourceUsedRound:0,
+  seerHitCount:0,perfumerArmed:false,shieldCounterDamage:3,reflectDamage:4,reflectBonus:3,attackBonus:4,
+  enemyHp:100,damageDealt:0
+ };
+ const comboRuntime={...enemyRuntime,state:comboState,damageHunter(amount){
+  const dealt=comboState.hunterReductionTurns>0?Math.round(amount*.7):amount;
+  comboState.damageDealt+=dealt;comboState.enemyHp-=dealt;return dealt;
+ }};
+ const comboContext=vm.createContext(comboRuntime);
+ vm.runInContext('Math.random=()=>0.99;',comboContext);
+ vm.runInContext(fn,comboContext);
+ vm.runInContext('enemyTurn();',comboContext);
+ assert.equal(comboState.hp,97,'thunder attack damages health after four shield points are consumed');
+ assert.equal(comboState.enemyHp,84,'mirror counter and thorn reflection stack with thunder bonus');
+ assert.equal(comboState.damageDealt,16,'both retaliation channels pass through shared hunter damage accounting');
+ assert.equal(comboState.shieldCounterDamage,0,'mirror counter is consumed after shield blocks damage');
+ assert.equal(comboState.reflectDamage,0,'thorns reflection is consumed after the landed hit');
+ assert.equal(comboState.reflectBonus,0,'thorn echo bonus is consumed with reflection');
+ assert.equal(comboState.attackBonus,0,'stored attack insight is consumed by the reflection');
+}
+console.log('Hunter retaliation runtime integration: mirror counter + thorns + thorn echo + insight + thunder stacking PASS');
+
+
