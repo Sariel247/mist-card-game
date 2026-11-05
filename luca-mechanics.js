@@ -14,8 +14,10 @@
     return Math.min(Math.max(1, Math.floor(actualGain * 0.25)), 100 - peerProgress);
   }
   function addRoundCharge(link, round, transferred) {
-    if (!link || transferred <= 0 || link.chargedRound === round || link.charge >= 3) return 0;
-    link.charge += 1; link.chargedRound = round; return 1;
+    if (!link || transferred <= 0 || link.chargedRound === round) return 0;
+    link.chargedRound = round;
+    if (link.charge >= 3) return 0;
+    link.charge += 1; return 1;
   }
   function reconnect(link, items, gateMode = false) {
     const next = createLink(items, gateMode);
