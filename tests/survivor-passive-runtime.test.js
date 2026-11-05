@@ -54,10 +54,9 @@ function runtime(selected,state){
  assert.equal(state.shield,3,'first hit consumes shield without health loss');
  // Reset the next-round state to isolate the second passive trigger.
  state.round=2;state.energy=4;state.skillPoints=3;state.hunterSkillPoints=3;
- state.shield=5;
  vm.runInContext('enemyTurn();',r.context);
  assert.equal(state.seerHitCount,0,'counter resets after second hit');
- assert.equal(state.shield,3,'second hit shield consumption and 3-point bird shield resolve in order');
+ assert.equal(state.shield,4,'second hit consumes two shield, then the bird grants three more');
  assert(r.logs.some(x=>x.includes('役鸟守护')),'seer trigger is logged');
 }
 
@@ -67,7 +66,7 @@ function runtime(selected,state){
  const state=makeState({hp:30,shield:0,fury:6,difficulty:{damage:6,roundDamage:0,gateBonus:0,interference:0,gateLoss:0}});
  const r=runtime('mercenary',state);
  vm.runInContext('enemyTurn();',r.context);
- assert.equal(state.hp,18,'first attack deals 3 and second attack deals full 6');
+ assert.equal(state.hp,21,'first attack deals 3 and second attack deals full 6');
  assert.equal(state.mercenaryGuardRound,1,'guard is marked for the current round');
 }
 
