@@ -42,5 +42,5 @@ has("受到伤害降低25%",'barrier status display matches reduced damage reduc
 has("state.hunterSkillPoints+'/3'",'hunter UI displays a three-point cap');
 has("state.hunterSkillPoints=Math.min(3,hunterSkillBefore+1)",'hunter regenerates exactly one skill point per round, capped at three');
 has("savedState.hunterSkillPoints<=3",'restored saves validate the three-point hunter cap');
-has("state.hunterSkillPoints=Math.min(3,Math.max(0,savedState.hunterSkillPoints))",'legacy saves above three points are clamped on restore');
+has("savedState.hunterSkillPoints=Math.min(3,Math.max(0,savedState.hunterSkillPoints))",'legacy saves above three points are clamped on restore');
 console.log('Hunter AI and first-time guide source audit: 41 assertions PASS');
