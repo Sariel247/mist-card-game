@@ -12,6 +12,11 @@ assert.match(readme, /^# 迷雾牌局 \| 第五人格同人卡牌游戏/m);
 assert.match(readme, /### V0\.8\.1 修复内容\n-/);
 assert.doesNotMatch(readme, /\\n/);
 assert.match(design, /线路共振/);
+assert.match(html, /data-id="luca"/);
+assert.match(html, /LucaMechanics\.createLink/);
+assert.match(html, /applyLucaCipherProgress/);
+assert.match(html, /囚徒释放「强电流」/);
+assert.match(html, /hunterNextAttackReduction/);
 assert.match(design, /强电流/);
 assert.match(design, /同步传输的进度不再次触发传输/);
 
