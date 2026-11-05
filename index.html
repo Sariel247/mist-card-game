@@ -301,6 +301,16 @@ state=savedState;selected=saved.selected;state.hero={...characters[selected]};st
 $('setup').classList.add('hidden');$('game').classList.add('active');$('playerName').textContent=state.hero.name;$('log').innerHTML='';log('已从本设备恢复上一次未完成的对局。');render();return true;
 }catch(e){state=null;try{localStorage.removeItem(SAVE_KEY)}catch(ignore){}return false;}
 }function activateGatePhase(){if(state.ciphers.every(x=>x.progress>=100)&&!state.gatePhase){state.gatePhase=true;if(selected==='luca'&&state.lucaLink)state.lucaLink=LucaMechanics.reconnect(state.lucaLink,state.gates,true);log('五台密码机全部完成！东、西两侧逃生大门已通电。监管者开始全力追击！')}}
+function applyLucaCipherProgress(target,gain){
+const before=target.progress;target.progress=Math.min(100,target.progress+Math.max(0,gain));const actual=target.progress-before;if(actual>0)trackCipherFury(before,target.progress);
+const link=state.lucaLink;if(selected==='luca'&&link&&!link.gateMode&&actual>0&&(target.id===link.a||target.id===link.b)){const peer=state.ciphers.find(x=>x.id===(target.id===link.a?link.b:link.a));if(peer&&peer.progress<100){const transfer=LucaMechanics.transferAmount(actual,peer.progress);if(transfer>0){const old=peer.progress;peer.progress+=transfer;trackCipherFury(old,peer.progress);link.transferredThisRound+=transfer;const charged=LucaMechanics.addRoundCharge(link,state.round,transfer);log('线路共振：传导 '+transfer+'% 进度。'+(charged?'电荷 +1。':''));}}if(target.progress>=100||(peer&&peer.progress>=100))link.reconnectPending=true;}
+return {before,after:target.progress};
+}
+function applyLucaGateProgress(target,gain){
+const before=target.progress;target.progress=Math.min(100,target.progress+Math.max(0,gain));const actual=target.progress-before;const link=state.lucaLink;
+if(selected==='luca'&&link&&link.gateMode&&actual>0){const index=state.gates.indexOf(target);if(index===link.a||index===link.b){const peer=state.gates[index===link.a?link.b:link.a];if(peer&&peer.progress<100){const transfer=LucaMechanics.transferAmount(actual,peer.progress);if(transfer>0){peer.progress+=transfer;link.transferredThisRound+=transfer;const charged=LucaMechanics.addRoundCharge(link,state.round,transfer);log('线路共振：另一侧大门传导 '+transfer+'% 进度。'+(charged?'电荷 +1。':''));}}if(target.progress>=100||(peer&&peer.progress>=100))link.reconnectPending=true;}}
+return {before,after:target.progress};
+}
 function decode(){if(!state||state.over||state.controlTurns>0||state.energy<1||state.decodeActions>=3)return;const target=state.ciphers.find(x=>x.progress<100);if(!target)return;state.energy--;state.decodeActions++;const baseGain=selected==='thief'?25:20;const statuePenalty=state.decodePenaltyRound===state.round?state.decodePenalty:0;const coldPenalty=weatherDecodePenalty();const penalty=statuePenalty+coldPenalty;const gain=Math.max(0,baseGain-penalty);const before=target.progress;target.progress=Math.min(100,target.progress+gain);trackCipherFury(before,target.progress);log('你破译了密码机 '+String(target.id).padStart(2,'0')+'，进度 '+before+'% → '+target.progress+'%。'+(statuePenalty?'（雕像封锁 -'+statuePenalty+'%）':'')+(coldPenalty?'（寒潮 -'+coldPenalty+'%）':''));if(target.progress>=100)log('密码机 '+String(target.id).padStart(2,'0')+' 已完成校准！');activateGatePhase();render()}
 function enemyTurn(){
 if(!state||state.over)return;
