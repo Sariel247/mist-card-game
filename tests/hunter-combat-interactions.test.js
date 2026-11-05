@@ -66,7 +66,7 @@ function extractFunction(name){
  assert.equal(damage(10),7,'actual damage function applies 30% barrier reduction');
  assert.equal(state.damageDealt,7,'damage statistics record reduced damage');
  assert.equal(state.enemyHp,43,'hunter HP receives reduced damage');
- state.round=6;state.hunterSkillUsedRound=5;
+ state.round=6;state.hunterSkillUsedRound=5;state.hunterSkillPoints=6;
  assert.equal(use('jackFogblade'),true,'actual Jack skill activates after its own cooldown/round gate');
  assert.equal(state.hunterShieldPierce,3);
  assert(logs.some(x=>x.includes('监管者减伤 30%')),'actual damage function logs the barrier reduction');
