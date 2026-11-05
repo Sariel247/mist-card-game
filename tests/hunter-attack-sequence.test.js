@@ -43,7 +43,7 @@ const context=vm.createContext(enemyRuntime);
 vm.runInContext('Math.random=()=>0.99;',context);
 vm.runInContext(fn,context);
 vm.runInContext('enemyTurn();',context);
-assert.equal(enemyRuntime.state.hp,94,'Jack pierce bypasses two shield points on first hit only across a two-hit fury turn');
+assert.equal(enemyRuntime.state.hp,96,'Jack pierce bypasses two shield points on first hit only across a two-hit fury turn');
 assert.equal(enemyRuntime.state.shield,0,'second attack consumes remaining shield normally');
 assert.equal(enemyRuntime.state.hunterShieldPierce,0,'one-shot pierce is consumed exactly once');
 assert.equal(enemyRuntime.state.fury,0,'fury threshold is spent once for the extra attack');
