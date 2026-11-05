@@ -35,4 +35,8 @@ has("case'barrier':state.hunterReductionTurns=Math.max(state.hunterReductionTurn
 has("Math.round(amount*0.75):amount",'barrier damage reduction is reduced to 25 percent');
 has("case'mark':state.hunterDamageBonus+=1;break;",'prey mark bonus is reduced to 1');
 has("case'bloodrage':state.fury+=1;state.hunterDamageBonus+=1;break;",'bloodrage gains are reduced to 1 each');
-console.log('Hunter AI and first-time guide source audit: 33 assertions PASS');
+has("name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'queen description matches reduced damage');
+has("name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'rampage description matches reduced damage');
+has("name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。'",'mark description matches reduced damage');
+has("监管者受到伤害降低25%",'barrier status display matches reduced damage reduction');
+console.log('Hunter AI and first-time guide source audit: 37 assertions PASS');
