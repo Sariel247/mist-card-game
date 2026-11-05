@@ -165,7 +165,7 @@ function runPlayerTurn() {
       const beforeHand = state.hand.length;
       play(best.index);
       if (state.over) return;
-      if (state.hand.length === beforeHand && best.card.type !== 'focus') break;
+      if (state.hand.includes(best.card)) break;
       continue;
     }
 
@@ -193,7 +193,7 @@ function runPlayerTurn() {
       const beforeHand = state.hand.length;
       play(best.index);
       if (state.over) return;
-      if (state.hand.length === beforeHand && best.card.type !== 'focus') break;
+      if (state.hand.includes(best.card)) break;
       continue;
     }
     break;
