@@ -33,7 +33,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 <button class="character" data-id="doctor"><img class="portrait" src="assets/characters/doctor.png" alt="医生艾米丽头像"><h3>医生 · 艾米丽</h3><p>主动治疗自己，恢复 5 点生命，冷却 2 个完整回合。</p><div class="tag">主动：医药专精</div></button>
 <button class="character" data-id="thief"><img class="portrait" src="assets/characters/thief.png" alt="慈善家克利切头像"><h3>慈善家 · 克利切</h3><p>行动灵活，擅长破译。密码机破译额外 +5%。</p><div class="tag">被动：灵巧</div></button>
 <button class="character" data-id="mercenary"><img class="portrait" src="assets/characters/mercenary.png" alt="佣兵奈布头像"><h3>佣兵 · 奈布</h3><p>每回合首次受到攻击时，伤害降低 3 点。</p><div class="tag">被动：钢铁意志</div></button>
-<button class="character" data-id="mechanic"><img class="portrait" src="assets/characters/mechanic.png" alt="机械师特蕾西头像"><h3>机械师 · 特蕾西</h3><p>生命上限 46 点；傀儡自动破译随密码机完成数成长，开局额外抽 1 张牌。</p><div class="tag">被动：机械专精</div></button>
+<button class="character" data-id="mechanic"><img class="portrait" src="assets/characters/mechanic.png" alt="机械师特蕾西头像"><h3>机械师 · 特蕾西</h3><p>傀儡自动破译随密码机完成数成长，开局额外抽 1 张牌。</p><div class="tag">被动：机械专精</div></button>
 <button class="character" data-id="luca"><div class="portrait luca-portrait">⚡</div><h3>囚徒 · 卢卡</h3><p>连接两台密码机，破译进度沿线路传导；积攒电荷后释放强电流。</p><div class="tag">线路共振 · 强电流</div></button>
 <button class="character" data-id="perfumer"><img class="portrait" src="assets/characters/perfumer.png" alt="调香师薇拉头像"><h3>调香师 · 薇拉</h3><p>每局可准备一次香水，下一次受到生命伤害后恢复最多 4 点生命。</p><div class="tag">主动：忘忧之香</div></button>
 </div>
@@ -66,13 +66,13 @@ button{font:inherit;cursor:pointer}.shell{max-width:1160px;margin:auto;padding:2
 <script src="luca-mechanics.js"></script>
 <script>
 const characters={
-seer:{name:'先知 · 伊莱',hp:48,energy:4,shield:0},
-doctor:{name:'医生 · 艾米丽',hp:52,energy:4,shield:0},
-thief:{name:'慈善家 · 克利切',hp:46,energy:4,shield:0},
-mercenary:{name:'佣兵 · 奈布',hp:54,energy:4,shield:0},
-mechanic:{name:'机械师 · 特蕾西',hp:46,energy:4,shield:0},
-luca:{name:'囚徒 · 卢卡',hp:48,energy:4,shield:0},
-perfumer:{name:'调香师 · 薇拉',hp:50,energy:4,shield:0}
+seer:{name:'先知 · 伊莱',hp:53,energy:4,shield:0},
+doctor:{name:'医生 · 艾米丽',hp:57,energy:4,shield:0},
+thief:{name:'慈善家 · 克利切',hp:51,energy:4,shield:0},
+mercenary:{name:'佣兵 · 奈布',hp:59,energy:4,shield:0},
+mechanic:{name:'机械师 · 特蕾西',hp:51,energy:4,shield:0},
+luca:{name:'囚徒 · 卢卡',hp:53,energy:4,shield:0},
+perfumer:{name:'调香师 · 薇拉',hp:55,energy:4,shield:0}
 };
 const deck=[
 {id:'strike',name:'破雾一击',symbol:'⚔',cost:1,skillCost:1,desc:'对监管者造成 6 点伤害。',type:'attack',value:6},
