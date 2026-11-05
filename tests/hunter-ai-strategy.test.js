@@ -38,5 +38,5 @@ has("case'bloodrage':state.fury+=1;state.hunterDamageBonus+=1;break;",'bloodrage
 has("name:'水镜追击',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'queen description matches reduced damage');
 has("name:'狂猎',cost:2,cooldown:3,desc:'下一次攻击额外造成 2 点伤害。'",'rampage description matches reduced damage');
 has("name:'猎物标记',cost:2,cooldown:3,desc:'下一次攻击额外造成 1 点伤害。'",'mark description matches reduced damage');
-has("监管者受到伤害降低25%",'barrier status display matches reduced damage reduction');
+has("受到伤害降低25%",'barrier status display matches reduced damage reduction');
 console.log('Hunter AI and first-time guide source audit: 37 assertions PASS');
