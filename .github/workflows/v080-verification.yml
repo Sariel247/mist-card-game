@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - v0.8.0-development
+      - mechanic-puppet-rework
   pull_request:
     branches:
       - main
