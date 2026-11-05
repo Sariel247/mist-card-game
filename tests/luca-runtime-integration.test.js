@@ -69,7 +69,10 @@ function buildProgressFunction(name, state, selected, events) {
   assert.equal(state.lucaLink.reconnectPending, true);
 }
 {
-  const page = extractFunction('useSkill');
+  const skillStart = html.indexOf('function useSkill()');
+  const skillEnd = html.indexOf('function enemyTurn()', skillStart);
+  assert(skillStart >= 0 && skillEnd > skillStart, 'useSkill section boundaries found');
+  const page = html.slice(skillStart, skillEnd);
   assert.match(page, /transferredThisRound>=.*gateMode/);
   assert(page.includes('damageHunter(5+bonus)'));
   assert(page.includes('hunterNextAttackReduction=2'));
