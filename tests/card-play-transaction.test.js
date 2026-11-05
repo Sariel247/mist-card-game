@@ -7,7 +7,7 @@ const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const script=(html.match(/<script>([\s\S]*?)<\/script>/)||[])[1];
 assert(script,'inline script exists');
 assert.doesNotThrow(()=>new vm.Script(script),'page inline JavaScript parses');
-const deckSource=script.match(/const deck=(\[[\s\S]*?\]);\nconst difficulties=/);
+const deckSource=script.match(/const deck=(\[[\s\S]*?\]);/);
 assert(deckSource,'deck source found');
 const deck=new Function('return '+deckSource[1])();
 const playStart=script.indexOf('function play(i){');
@@ -68,13 +68,13 @@ for(const card of deck){
  assert(drawStart>=0&&drawEnd>drawStart,'draw function boundaries found');
  const drawBody=script.slice(drawStart+'function draw(n=1){'.length,drawEnd).replace(/\}\s*$/,'');
  const state={deck:[],hand:[]};
- const drawCards=new Function('state','deck','shuffle','return function(n=1){'+drawBody+'}')(state,deck,items=>[...items]);
+ const drawCards=new Function('state','deck','weightedShuffle','buildCardPool','return function(n=1){'+drawBody+'}')(state,deck,items=>[...items],()=>deck);
  drawCards(1);
- assert.equal(state.deck.length,47,'reshuffle restores 48 cards before drawing one');
+ assert.equal(state.deck.length,83,'reshuffle restores 84 cards before drawing one');
  assert.equal(state.hand.length,1,'one requested card is drawn');
  const counts=new Map();
  [...state.deck,...state.hand].forEach(card=>counts.set(card.id,(counts.get(card.id)||0)+1));
- assert.equal(counts.size,24,'full reshuffled deck contains all 24 card types');
- assert([...counts.values()].every(count=>count===2),'full reshuffled deck preserves two copies of every card');
+ assert.equal(counts.size,28,'full reshuffled deck contains all 28 card types');
+ assert([...counts.values()].every(count=>count===3),'full reshuffled deck preserves three copies of every card');
 }
 console.log('Card play transaction: '+executed+' card branches + 7 rejected-operation cases + 4 deck recycle assertions PASS');
