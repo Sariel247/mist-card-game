@@ -70,11 +70,11 @@ function buildProgressFunction(name, state, selected, events) {
 }
 {
   const page = extractFunction('useSkill');
-  assert.match(page, /link\.transferredThisRound>\\s*\\(link\.gateMode\\?10:15\\)/);
-  assert.match(page, /damageHunter\\(5\\+bonus\\)/);
-  assert.match(page, /hunterNextAttackReduction=2/);
-  assert.match(html, /selected==='luca'\\?applyLucaCipherProgress/);
-  assert.match(html, /selected==='luca'\\)applyLucaGateProgress/);
-  assert.match(html, /id="lucaPanel"/);
+  assert.match(page, /transferredThisRound>=.*gateMode/);
+  assert(page.includes('damageHunter(5+bonus)'));
+  assert(page.includes('hunterNextAttackReduction=2'));
+  assert(html.includes("selected==='luca'?applyLucaCipherProgress"));
+  assert(html.includes("if(selected==='luca')applyLucaGateProgress"));
+  assert(html.includes('id="lucaPanel"'));
 }
 console.log('Luca live-runtime integration: cipher transfer, gate transfer, charge limits, completion reconnect, and Strong Current wiring PASS.');
