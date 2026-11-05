@@ -47,4 +47,10 @@ function fresh(overrides={}){return Object.assign({over:false,round:1,mechanicUs
 {
  const s=fresh({controlTurns:1});harness(s).use();assert.equal(s.ciphers[0].progress,20);
 }
-console.log('Mechanic puppet lifecycle: 14 assertions PASS');
+{
+ const s=fresh({decodePenalty:15,decodePenaltyRound:1});
+ const h=harness(s,()=>5);h.use();
+ assert.equal(s.ciphers[0].progress,0,'fully blocked puppet makes no progress');
+ assert.equal(s.mechanicUses,2,'fully blocked puppet does not consume a limited use');
+}
+console.log('Mechanic puppet lifecycle: 17 assertions PASS');
